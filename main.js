@@ -86,25 +86,47 @@
   document.querySelectorAll('.split').forEach(split);
   var small=innerWidth<700;
 
-  /* ---------- frame-sequence player: WebP frames drawn to canvas ----------
-     Tiers: m = 1080x1440 portrait crop (phones), d = 1920x1080. Recut from the 2x upscales: clean shots only,
-     joined by a dip through dark; no frame shows two scenes. Frame index = round(progress*(n-1)), linear. */
-  var FV='3';
+  /* ---------- frame-sequence player: AVIF frames (WebP fallback) drawn to canvas ----------
+     Tiers by orientation: m = 1080x1440 portrait crop, d = 1920x1080 landscape, so a frame is never drawn above 1.0x
+     CSS size at common widths. Frame index = round(progress*(n-1)), linear; progress comes only from the film's
+     scroll position. Loading is on demand and shared by all films (4 requests at a time):
+       1. a coarse pass (ends + every 8th frame) when a film nears the viewport (hero: after load)
+       2. every 4th frame when the visitor starts scrolling toward it, so the nearest frame is never more than 2 away
+       3. while a film is on screen, the frames just ahead of the scroll position, then the rest by distance.
+     The nearest loaded frame is always drawn, so the scrub never stalls. With Save-Data or a 2G connection no
+     frames load at all: each film shows its poster (frame 0) behind the captions. */
+  var FV='4',conn=navigator.connection||{},lite=!!(conn.saveData||/(^|-)2g$/.test(conn.effectiveType||''));
+  if(lite)root.classList.add('lite');
+  var portrait=matchMedia('(orientation:portrait)').matches,ext='webp',seqs=[],active=0,got=0;
   function cap(){return Math.min(window.devicePixelRatio||1,2);}
-  function Seq(sec){
-    var n=+sec.dataset.frames,name=sec.dataset.film,set=small?'m':'d';
-    var cv=sec.querySelector('canvas'),ctx=cv.getContext('2d'),imgs=new Array(n),ok=new Uint8Array(n);
-    var want=0,drawn=-1,queue=[],active=0,phase=0,fails=0;
-    function src(i){return 'film/'+name+'/'+set+'/'+('00'+i).slice(-3)+'.webp?v='+FV;}
-    function range(s){var a=[];for(var i=0;i<n;i+=s)a.push(i);return a;}
-    var coarse=[0,n-1].concat(range(8)),fine=range(4).concat(range(2),range(1)),seen={};
-    function add(list){list.forEach(function(i){if(!seen[i]){seen[i]=1;queue.push(i);}});pump();}
-    function pump(){while(active<4&&queue.length){(function(i){active++;var im=new Image();im.decoding='async';
-      im.onload=function(){ok[i]=1;imgs[i]=im;active--;if(drawn<0||Math.abs(i-want)<Math.abs(drawn-want))paint();pump();};
-      im.onerror=function(){active--;fails++;pump();};im.src=src(i);})(queue.shift());}}
-    // phase 1: a coarse pass (every 8th frame) so scrubbing works at once; phase 2: everything else
-    function start(){if(phase<1){phase=1;add(coarse);}}
-    function full(){start();if(phase<2){phase=2;add(fine);}}
+  var scrolled=scrollY>0; // a page opened part-way down counts as scrolled
+  function pump(){
+    if(!scrolled)return;
+    while(active<(got<1?1:got<3?2:3)){var best=null,bs=1e9;
+      for(var s=0;s<seqs.length;s++){var c=seqs[s].pick();if(c&&c.score<bs){bs=c.score;best=c;}}
+      if(!best)return;best.seq.fetch(best.i);}
+  }
+  function Seq(sec,order){
+    var n=+sec.dataset.frames,name=sec.dataset.film,set=portrait?'m':'d';
+    var cv=sec.querySelector('canvas'),ctx=cv.getContext('2d'),imgs=new Array(n),ok=new Uint8Array(n),asked=new Uint8Array(n);
+    var want=0,drawn=-1,level=0,onscreen=false,dir=1,fails=0;
+    function src(i){return 'film/'+name+'/'+set+'/'+('00'+i).slice(-3)+'.'+ext+'?v='+FV;}
+    function fetch(i){asked[i]=1;active++;var im=new Image();im.decoding='async';
+      im.onload=function(){ok[i]=1;imgs[i]=im;active--;got++;if(drawn<0||Math.abs(i-want)<Math.abs(drawn-want))paint();pump();};
+      im.onerror=function(){active--;fails++;pump();};im.src=src(i);}
+    // the best frame to fetch next for this film, or null; lower score = sooner
+    function pick(){
+      if(lite||!level)return null;var b=-1,bs=1e9;
+      for(var i=0;i<n;i++){if(asked[i])continue;var s=-1,d=(i-want)*dir;
+        if(i===n-1||i%8===0)s=onscreen?(d>=0?d:60-d):order;          // coarse: nearest ahead first while on screen
+        else if(i%4===0){if(level>=2)s=onscreen?(d>=0?d:60-d):10+order;}  // every 4th, same order: the nearest frame is never more than 2 away
+        else if(onscreen&&level>=3){if(d>=0&&d<=10)s=20+d;else if(d<0&&d>=-4)s=30-d;} // the frames just ahead (and just behind)
+        if(s>=0&&s<bs){bs=s;b=i;}}
+      return b<0?null:{seq:api,i:b,score:bs};}
+    function near(l){if(l>level){level=l;pump();}}
+    function poster(){if(lite||asked[0])return;asked[0]=1;var im=new Image();im.decoding='async';
+      im.onload=function(){if(!ok[0]){ok[0]=1;imgs[0]=im;paint();}};im.onerror=function(){asked[0]=0;};
+      im.src='film/'+name+'/poster-'+set+'.'+ext+'?v='+FV;}
     function nearest(i){for(var d=0;d<n;d++){if(i-d>=0&&ok[i-d])return i-d;if(i+d<n&&ok[i+d])return i+d;}return -1;}
     var W=0,H=0;
     function size(){var dpr=cap(),w=Math.round(cv.clientWidth*dpr),h=Math.round(cv.clientHeight*dpr);if(w===W&&h===H)return;
@@ -113,25 +135,31 @@
     function paint(){var k=nearest(want);if(k<0||k===drawn)return;var im=imgs[k],s=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;
       ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);drawn=k;}
     var raf=0;
-    function go(p){var i=Math.max(0,Math.min(n-1,Math.round(p*(n-1))));if(i!==want){want=i;if(phase<2&&i>0)full();}
+    function go(p){var i=Math.max(0,Math.min(n-1,Math.round(p*(n-1))));if(i!==want){dir=i>want?1:-1;want=i;if(onscreen)pump();}
       if(!raf)raf=requestAnimationFrame(function(){raf=0;paint();});}
+    function show(v){if(v!==onscreen){onscreen=v;if(v&&level>=2)near(3);pump();}}
     addEventListener('resize',size);size();
-    return {go:go,start:start,full:full,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,cw:W,ch:H,fails:fails,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
+    var api={go:go,pick:pick,fetch:fetch,near:near,show:show,poster:poster,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,ext:ext,lite:lite,cw:W,ch:H,fails:fails,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
+    return api;
   }
+  // AVIF when the browser decodes it (about 40% lighter than WebP at the same sharpness), else WebP
+  var avifReady=new Promise(function(res){var t=new Image();t.onload=function(){res(t.width===2);};t.onerror=function(){res(false);};
+    t.src='data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADrbWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAAAAAAAOcGl0bQAAAAAAAQAAAB5pbG9jAAAAAEQAAAEAAQAAAAEAAAETAAAAIgAAAChpaW5mAAAAAAABAAAAGmluZmUCAAAAAAEAAGF2MDFDb2xvcgAAAABqaXBycAAAAEtpcGNvAAAAFGlzcGUAAAAAAAAAAgAAAAIAAAAQcGl4aQAAAAADCAgIAAAADGF2MUOBAAwAAAAAE2NvbHJuY2x4AAEADQAGgAAAABdpcG1hAAAAAAAAAAEAAQQBAoMEAAAAKm1kYXQSAAoIGAA2iAhoNCAyFBlHh4Yhh5555oAAAJBAyRxhQoFI';}).then(function(a){ext=a?'avif':'webp';return a;});
 
-  /* ---------- the films: held by CSS sticky; one scrubbed timeline per film owns frame, captions and veil ---------- */
-  var seqs=[];
+  /* ---------- the films: held by CSS sticky; one scrubbed timeline per film owns frame and veil; captions toggle ---------- */
+  addEventListener('scroll',function first(){scrolled=true;removeEventListener('scroll',first);avifReady.then(pump);},{passive:true});
   document.querySelectorAll('.film').forEach(function(sec,idx){
-    var seq=Seq(sec);seqs.push(seq);
+    var seq=Seq(sec,idx);seqs.push(seq);
     var len=+sec.dataset.len;
-    if(!idx){ // hero: poster first, then a coarse pass after load, the rest once the visitor scrolls or the page is idle
-      var kick=function(){seq.start();};
-      if(document.readyState==='complete')kick();else addEventListener('load',kick);
-      addEventListener('scroll',function once(){seq.full();removeEventListener('scroll',once);},{passive:true});
+    if(!idx){
+      // hero: the poster (frame 0) is already on screen; no frame is requested until the visitor scrolls
+      avifReady.then(function(){seq.poster();});
+      addEventListener('scroll',function once(){avifReady.then(function(){seq.near(3);});removeEventListener('scroll',once);},{passive:true});
     }else{
-      new IntersectionObserver(function(e,o){if(e[0].isIntersecting){seq.start();o.disconnect();}},{rootMargin:'300% 0px'}).observe(sec);
-      new IntersectionObserver(function(e,o){if(e[0].isIntersecting){seq.full();o.disconnect();}},{rootMargin:'150% 0px'}).observe(sec);
+      new IntersectionObserver(function(e,o){if(e[0].isIntersecting){avifReady.then(function(){seq.poster();seq.near(1);});o.disconnect();}},{rootMargin:'250% 0px'}).observe(sec);
+      new IntersectionObserver(function(e,o){if(e[0].isIntersecting){avifReady.then(function(){seq.near(2);});o.disconnect();}},{rootMargin:'150% 0px'}).observe(sec);
     }
+    new IntersectionObserver(function(e){avifReady.then(function(){seq.show(e[0].isIntersecting);});},{rootMargin:'25% 0px'}).observe(sec);
     var tl=G.timeline({defaults:{ease:'none'},onUpdate:req,scrollTrigger:{trigger:sec,start:'top top',end:'bottom bottom',scrub:.6,onUpdate:req,onToggle:req}});
     var pr={p:0};
     tl.to(pr,{p:1,duration:1,onUpdate:function(){seq.go(pr.p);}},0);
@@ -141,18 +169,29 @@
     if(vout)tl.fromTo(vout,{opacity:0},{opacity:1,duration:f,ease:'power1.in'},1-f);
     if(label){if(idx)tl.fromTo(label,{opacity:0},{opacity:1,duration:.03},0);tl.to(label,{opacity:0,duration:.03},1-f);}
     var hint=sec.querySelector('.film__hint');if(hint)tl.to(hint,{opacity:0,duration:.04},.02);
-    sec.querySelectorAll('.cap').forEach(function(c){
-      var at=c.dataset.at.split(',').map(Number),a=at[0],b=at[1],kids=[].slice.call(c.children).filter(function(k){return !k.classList.contains('split');}),words=c.querySelectorAll('.wi');
-      if(a>0){
-        tl.fromTo(c,{autoAlpha:0},{autoAlpha:1,duration:.03},a);
-        tl.fromTo(words,{yPercent:110},{yPercent:0,duration:.06,stagger:.006,ease:'power2.out'},a);
-        tl.fromTo(kids,{y:28,opacity:0},{y:0,opacity:1,duration:.05,stagger:.012,ease:'power2.out'},a+.012);
-      }else G.set(c,{opacity:1,visibility:'visible'}); // the H1 card stays in the accessibility tree; it only fades
-      if(b<1){tl.to(kids,{y:-16,opacity:0,duration:.035,stagger:.006,ease:'power1.in'},b-.045);
-        tl.to(words,{yPercent:-110,duration:.04,stagger:.004,ease:'power1.in'},b-.045);
-        if(a>0)tl.to(c,{autoAlpha:0,duration:.01},b);
-        else{tl.to(c,{opacity:0,duration:.01},b);tl.set(c.querySelectorAll('a'),{pointerEvents:'none'},b);}}
+    /* captions: shown while the film's progress is inside their window. Their entrance and exit play on a clock
+       (about .6s) when that boundary is crossed, and run backwards when it is crossed backwards, so a stopped
+       scroll always rests on whole words, never on a word half inside its mask. */
+    var caps=[].slice.call(sec.querySelectorAll('.cap')).map(function(c){
+      var at=c.dataset.at.split(',').map(Number),kids=[].slice.call(c.children).filter(function(k){return !k.classList.contains('split');}),words=c.querySelectorAll('.wi');
+      var t=G.timeline({paused:true});
+      if(at[0]>0){
+        G.set(c,{autoAlpha:0});
+        t.to(c,{autoAlpha:1,duration:.15},0)
+         .fromTo(words,{yPercent:110},{yPercent:0,duration:.55,stagger:.04,ease:'power3.out',immediateRender:false},0)
+         .fromTo(kids,{y:24,opacity:0},{y:0,opacity:1,duration:.5,stagger:.06,ease:'power3.out',immediateRender:false},.08);
+      }else{ // the H1 card: visible from load (CSS); it fades out past its window and stays in the accessibility tree
+        G.set(c,{opacity:1,visibility:'visible'});
+        t.to(kids,{y:-16,opacity:0,duration:.35,stagger:.04,ease:'power1.in'},0).to(words,{yPercent:-110,duration:.35,stagger:.02,ease:'power1.in'},0)
+         .to(c,{opacity:0,duration:.15},.3).set(c.querySelectorAll('a'),{pointerEvents:'none'},.45);
+      }
+      return {a:at[0],b:at[1],t:t,on:at[0]===0};
     });
+    function capsAt(p){caps.forEach(function(k){var inside=p>=k.a&&p<k.b;
+      if(k.a>0){if(inside!==k.on){k.on=inside;if(inside)k.t.timeScale(1).play();else k.t.timeScale(1.5).reverse();}}
+      else if(inside!==k.on){k.on=inside;if(inside)k.t.timeScale(1.5).reverse();else k.t.timeScale(1).play();}});}
+    tl.eventCallback('onUpdate',function(){req();capsAt(tl.progress());});
+    capsAt(0);
   });
 
   /* ---------- body tone follows the section under the middle of the screen (built before pinning) ---------- */

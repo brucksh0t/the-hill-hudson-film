@@ -9,8 +9,8 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/mulish-latin.woff2" crossorigin>
-<link rel="preload" as="image" type="image/webp" href="film/hero/poster-m.webp?v=3" media="(max-width:699px)" fetchpriority="high">
-<link rel="preload" as="image" type="image/webp" href="film/hero/poster-d.webp?v=3" media="(min-width:700px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" href="film/hero/poster-m.avif?v=4" media="(orientation:portrait)" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" href="film/hero/poster-d.avif?v=4" media="(orientation:landscape)" fetchpriority="high">
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion');</script>
 <style>/*@CSS@*/</style>
 </head>
@@ -27,13 +27,14 @@
 <main>
 <!-- FILM 1 · HERO. Shot 1: the walk up to the Palladian Barn, ending at the open ground-floor doors.
      Dip through dark (scene cut under black). Shot 2: upstairs, the reception floor. Ends on the date section's ivory. -->
-<section class="film film--hero" id="film-arrival" data-film="hero" data-frames="75" data-len="320" style="--len:320svh" data-tone="#141a16" data-out="#f6f1e7" aria-labelledby="hero-h">
+<section class="film film--hero" id="film-arrival" data-film="hero" data-frames="57" data-len="320" style="--len:320svh" data-tone="#141a16" data-out="#f6f1e7" aria-labelledby="hero-h">
   <div class="film__stage">
-    <picture class="film__poster"><source type="image/webp" srcset="img/palladian-barn-800.webp 800w, img/palladian-barn-1600.webp 1600w" sizes="100vw"><img src="img/palladian-barn.jpg" alt="The pale-blue Palladian Barn at The Hill in low sun, its white doors facing the lawn." width="1600" height="1062" loading="lazy" fetchpriority="high" decoding="async"></picture>
+    <picture class="film__poster"><source media="(orientation:portrait)" type="image/avif" srcset="film/hero/poster-m.avif?v=4"><source media="(orientation:portrait)" type="image/webp" srcset="film/hero/poster-m.webp?v=4"><source type="image/avif" srcset="film/hero/poster-d.avif?v=4"><img src="film/hero/poster-d.webp?v=4" alt="The front of the pale-blue Palladian Barn at The Hill under a clear blue sky." width="1920" height="1080" loading="lazy" fetchpriority="high" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__veil film__veil--out" aria-hidden="true"></div>
     <p class="film__label">Illustrative motion generated from The Hill’s photos, not filmed</p>
+    <p class="film__still">Still from illustrative motion generated from The Hill’s photos, not filmed</p>
     <div class="film__caps">
       <div class="cap cap--intro" data-at="0,.15">
         <p class="kicker">Hudson Valley Weddings at&nbsp;The&nbsp;Hill</p>
@@ -42,8 +43,8 @@
         <div class="btns"><a class="btn btn--primary btn--lg" href="#date">CHECK A 2027 DATE</a><a class="btn btn--ghost btn--lg" href="tel:+18457589002">SCHEDULE A TOUR</a></div>
         <ul class="facts-bar" aria-label="At a glance"><li><b>1801</b><span>Palladian Barn</span></li><li><b>300</b><span>acres</span></li><li><b>75–300</b><span>guests</span></li><li><b>May–Oct</b><span>season</span></li></ul>
       </div>
-      <div class="cap cap--right" data-at=".22,.53"><p class="kicker">The carriage barn</p><h2 class="split">The Palladian Barn</h2><p>Once the estate’s carriage barn, now a two-level venue with stalls on the first floor and a vast event space on the second.</p></div>
-      <div class="cap" data-at=".65,.79"><p class="kicker">Upstairs</p><h2 class="split">Lit by string lights</h2><p>Set with round, rectangular and farm tables.</p></div>
+      <div class="cap cap--right" data-at=".18,.43"><p class="kicker">The carriage barn</p><h2 class="split">The Palladian Barn</h2><p>Once the estate’s carriage barn, now a two-level venue with stalls on the first floor and a vast event space on the second.</p></div>
+      <div class="cap" data-at=".6,.8"><p class="kicker">Upstairs</p><h2 class="split">Lit by string lights</h2><p>Set with round, rectangular and farm tables.</p></div>
     </div>
     <div class="film__meter" aria-hidden="true"><span></span></div>
     <p class="film__hint" aria-hidden="true">Scroll</p>
@@ -90,23 +91,23 @@
     <svg class="day__arc" viewBox="0 0 200 110" aria-hidden="true"><path class="day__arcpath" d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="rgba(246,241,231,.3)" stroke-width="1.5"/><circle data-arcsun cx="10" cy="100" r="7" fill="#d8a85a"/></svg>
     <div class="scenes">
       <article class="scene" data-from="left">
-        <figure class="scene__img"><picture><source type="image/webp" srcset="img/palladian-barn-800.webp 800w, img/palladian-barn-1600.webp 1600w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/palladian-barn.jpg" alt="The Palladian Barn from the side: pale blue clapboard, white windows and a cupola under a blue sky." width="1600" height="1062" loading="lazy" decoding="async"></picture></figure>
+        <figure class="scene__img"><picture><source type="image/avif" srcset="img/palladian-barn-800.avif 800w, img/palladian-barn-1200.avif 1200w, img/palladian-barn-1600.avif 1600w" sizes="(min-width:900px) 55vw, 90vw"><source type="image/webp" srcset="img/palladian-barn-800.webp 800w, img/palladian-barn-1200.webp 1200w, img/palladian-barn-1600.webp 1600w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/palladian-barn.jpg" alt="The Palladian Barn from the side: pale blue clapboard, white windows and a cupola under a blue sky." width="1600" height="1062" loading="lazy" decoding="async"></picture></figure>
         <div class="scene__copy"><p class="scene__n">01 · Getting ready</p><h3>The whole estate is yours</h3><p>Access two days before and the day after for setup and cleanup. A bridal day cottage, plus a private groom’s day room in the barn.</p></div>
       </article>
       <article class="scene scene--flip" data-from="right">
-        <figure class="scene__img"><picture><source type="image/webp" srcset="img/hilltop-ceremony-800.webp 800w, img/hilltop-ceremony-1600.webp 1600w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/hilltop-ceremony.jpg" alt="Rows of white chairs set for an outdoor ceremony on the hilltop, with tall pines and distant mountains." width="1600" height="1200" loading="lazy" decoding="async"></picture></figure>
+        <figure class="scene__img"><picture><source type="image/avif" srcset="img/hilltop-ceremony-800.avif 800w, img/hilltop-ceremony-1200.avif 1200w, img/hilltop-ceremony-1600.avif 1600w" sizes="(min-width:900px) 55vw, 90vw"><source type="image/webp" srcset="img/hilltop-ceremony-800.webp 800w, img/hilltop-ceremony-1200.webp 1200w, img/hilltop-ceremony-1600.webp 1600w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/hilltop-ceremony.jpg" alt="Rows of white chairs set for an outdoor ceremony on the hilltop, with tall pines and distant mountains." width="1600" height="1200" loading="lazy" decoding="async"></picture></figure>
         <div class="scene__copy"><p class="scene__n">02 · Ceremony</p><h3>On the hill, or in the barn</h3><p>Choose from indoor and outdoor locations. If it rains, the ceremony moves downstairs or upstairs in the barn. An ordained Interfaith Minister at The Hill is available to be your officiant.</p></div>
       </article>
       <article class="scene" data-from="bottom">
-        <figure class="scene__img"><picture><source type="image/webp" srcset="img/art-barn-800.webp 800w, img/art-barn-1600.webp 1600w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/art-barn.jpg" alt="The white Art Barn with its doors open and cocktail tables set out on the lawn under tall trees." width="1600" height="1080" loading="lazy" decoding="async"></picture></figure>
+        <figure class="scene__img"><picture><source type="image/avif" srcset="img/art-barn-800.avif 800w, img/art-barn-1200.avif 1200w, img/art-barn-1600.avif 1600w" sizes="(min-width:900px) 55vw, 90vw"><source type="image/webp" srcset="img/art-barn-800.webp 800w, img/art-barn-1200.webp 1200w, img/art-barn-1600.webp 1600w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/art-barn.jpg" alt="The white Art Barn with its doors open and cocktail tables set out on the lawn under tall trees." width="1600" height="1080" loading="lazy" decoding="async"></picture></figure>
         <div class="scene__copy"><p class="scene__n">03 · Cocktails</p><h3>Out at the Art Barn</h3><p>The estate’s old blacksmith’s shop, with lovely windows and a long farm table. The wagon bar, games and outdoor furniture are on hand.</p></div>
       </article>
       <article class="scene scene--flip" data-from="left">
-        <figure class="scene__img"><picture><source type="image/webp" srcset="img/barn-tables-800.webp 800w, img/barn-tables-1500.webp 1500w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/barn-tables.jpg" alt="Long reception tables on the Palladian Barn’s upper floor, lit by string lights, with the big arched window behind them." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
+        <figure class="scene__img"><picture><source type="image/avif" srcset="img/barn-tables-800.avif 800w, img/barn-tables-1200.avif 1200w, img/barn-tables-1500.avif 1500w" sizes="(min-width:900px) 55vw, 90vw"><source type="image/webp" srcset="img/barn-tables-800.webp 800w, img/barn-tables-1200.webp 1200w, img/barn-tables-1500.webp 1500w" sizes="(min-width:900px) 55vw, 90vw"><img src="img/barn-tables.jpg" alt="Long reception tables on the Palladian Barn’s upper floor, lit by string lights, with the big arched window behind them." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
         <div class="scene__copy"><p class="scene__n">04 · Dinner</p><h3>Upstairs in the Palladian Barn</h3><p>The barn holds 75 to 300 guests for the ceremony and reception.</p></div>
       </article>
       <article class="scene scene--small" data-from="right">
-        <figure class="scene__img"><picture><source type="image/webp" srcset="img/barn-lanterns-800.webp 800w" sizes="(min-width:900px) 480px, 90vw"><img src="img/barn-lanterns.jpg" alt="White paper lanterns hung from the beams of the barn above a set reception floor." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
+        <figure class="scene__img"><picture><source type="image/avif" srcset="img/barn-lanterns-800.avif 800w" sizes="(min-width:900px) 480px, 90vw"><source type="image/webp" srcset="img/barn-lanterns-800.webp 800w" sizes="(min-width:900px) 480px, 90vw"><img src="img/barn-lanterns.jpg" alt="White paper lanterns hung from the beams of the barn above a set reception floor." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
         <div class="scene__copy"><p class="scene__n">05 · Dancing, then the fire</p><h3>Amplified until 10:30, unplugged until 11</h3><p>Amplified music runs until 10:30 pm and un-amplified until 11:00 pm. Wind down by the fire pit; The Hill says to ask about setting one up.</p></div>
       </article>
     </div>
@@ -115,9 +116,9 @@
 
 <!-- FILM 2 · IMPACT. Three real places, each its own shot, joined by a dip through dark:
      the field arch, the hilltop ceremony lawn toward the pines, the Art Barn. Ends on the story section's paper. -->
-<section class="film film--grounds" id="film-grounds" data-film="grounds" data-frames="77" data-len="300" style="--len:300svh" data-tone="#141a16" data-in="#1d2620" data-out="#fbf8f2" aria-label="Film: the grounds">
+<section class="film film--grounds" id="film-grounds" data-film="grounds" data-frames="57" data-len="300" style="--len:300svh" data-tone="#141a16" data-in="#1d2620" data-out="#fbf8f2" aria-label="Film: the grounds">
   <div class="film__stage">
-    <picture class="film__poster"><source type="image/webp" srcset="img/hilltop-ceremony-800.webp 800w, img/hilltop-ceremony-1600.webp 1600w" sizes="100vw"><img src="img/hilltop-ceremony.jpg" alt="White ceremony chairs on the hilltop lawn, with tall pines and distant mountains." width="1600" height="1200" loading="lazy" decoding="async"></picture>
+    <picture class="film__poster"><source type="image/avif" srcset="img/hilltop-ceremony-800.avif 800w, img/hilltop-ceremony-1200.avif 1200w, img/hilltop-ceremony-1600.avif 1600w" sizes="100vw"><source type="image/webp" srcset="img/hilltop-ceremony-800.webp 800w, img/hilltop-ceremony-1200.webp 1200w, img/hilltop-ceremony-1600.webp 1600w" sizes="100vw"><img src="img/hilltop-ceremony.jpg" alt="White ceremony chairs on the hilltop lawn, with tall pines and distant mountains." width="1600" height="1200" loading="lazy" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__veil film__veil--out" aria-hidden="true"></div>
@@ -175,9 +176,9 @@
     <h2 id="gr-h" class="disp split">The grounds</h2>
     <p class="lede lede--dark">Thoroughbreds in the pastures, a gazebo, wildflower fields, peonies, apple trees and dogwoods.</p>
     <div class="mosaic">
-      <figure class="m m--wide" data-from="left"><picture><source type="image/webp" srcset="img/horses-800.webp 800w, img/horses-1500.webp 1500w" sizes="(min-width:900px) 60vw, 90vw"><img src="img/horses.jpg" alt="Horses leaning over a wooden pasture fence, with wooded hills behind." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--tall" data-from="right"><picture><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 34vw, 90vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--small" data-from="bottom"><picture><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-width:900px) 420px, 90vw"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--wide" data-from="left"><picture><source type="image/avif" srcset="img/horses-800.avif 800w, img/horses-1200.avif 1200w, img/horses-1500.avif 1500w" sizes="(min-width:900px) 60vw, 90vw"><source type="image/webp" srcset="img/horses-800.webp 800w, img/horses-1200.webp 1200w, img/horses-1500.webp 1500w" sizes="(min-width:900px) 60vw, 90vw"><img src="img/horses.jpg" alt="Horses leaning over a wooden pasture fence, with wooded hills behind." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--tall" data-from="right"><picture><source type="image/avif" srcset="img/wagon-bar-800.avif 800w, img/wagon-bar-1200.avif 1200w" sizes="(min-width:900px) 34vw, 90vw"><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 34vw, 90vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--small" data-from="bottom"><picture><source type="image/avif" srcset="img/field-ceremony-800.avif 800w" sizes="(min-width:900px) 420px, 90vw"><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-width:900px) 420px, 90vw"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
       <div class="m m--note"><p>Just a 2-hour train ride from New York City. Minutes from Hudson’s hotels and B&amp;Bs.</p></div>
     </div>
     <p class="note">Photos from hudsonvalleyweddings.net.</p>
@@ -203,7 +204,7 @@
      Each is its own shot, joined by a dip through dark. Ends on the visit section's ink. -->
 <section class="film film--night" id="film-night" data-film="night" data-frames="47" data-len="340" style="--len:340svh" data-tone="#141a16" data-in="#f6f1e7" data-out="#1d2620" aria-labelledby="end-h">
   <div class="film__stage">
-    <picture class="film__poster"><source type="image/webp" srcset="img/barn-front-800.webp 800w, img/barn-front-1600.webp 1600w" sizes="100vw"><img src="img/barn-front.jpg" alt="Evening at the pale-blue Palladian Barn, a couple dancing in the glowing center doorway." width="1600" height="1067" loading="lazy" decoding="async"></picture>
+    <picture class="film__poster"><source type="image/avif" srcset="img/barn-front-800.avif 800w, img/barn-front-1200.avif 1200w, img/barn-front-1600.avif 1600w" sizes="100vw"><source type="image/webp" srcset="img/barn-front-800.webp 800w, img/barn-front-1200.webp 1200w, img/barn-front-1600.webp 1600w" sizes="100vw"><img src="img/barn-front.jpg" alt="The pale-blue Palladian Barn, a couple dancing in the lit center doorway." width="1600" height="1067" loading="lazy" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__veil film__veil--out" aria-hidden="true"></div>
