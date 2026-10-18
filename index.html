@@ -52,7 +52,7 @@ main,.foot{overflow-x:clip}
 .film{background:var(--night);color:#fff}
 .film__stage{position:relative}
 .film__poster img{width:100%;max-height:78svh;object-fit:cover}
-.film__cv,.film__scrim,.film__veil,.film__meter,.film__hint,.film__label,.film__still{display:none}
+.film__cv,.film__dip,.film__scrim,.film__veil,.film__meter,.film__hint,.film__label,.film__still{display:none}
 html:not(.motion) .film--hero .film__still{display:block;position:absolute;z-index:3;top:.7rem;left:4vw;right:4vw;width:fit-content;margin:0;padding:.3rem .7rem;border-radius:3px;background:rgba(10,13,11,.78);color:#fff;font-size:.75rem;line-height:1.35}
 .film__caps{width:min(1180px,90vw);margin:0 auto;padding:2.5rem 0 3rem;display:grid;gap:2.5rem}
 .cap .kicker{color:#fff;text-wrap:balance}
@@ -87,6 +87,8 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 }
 .lite .film canvas{display:none}
 .motion .film__poster{display:none}
+.motion .film__dip{display:block;position:absolute;inset:0;background:rgb(10,13,11);opacity:0;pointer-events:none}
+.motion .film--hero + .after-film{margin-top:-45svh}
 .motion .film__cv{display:block;position:absolute;inset:0;width:100%;height:100%}
 .motion .film__scrim{display:block;position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 38%,rgba(10,13,11,0) 45%,rgba(10,13,11,.5) 100%),linear-gradient(0deg,rgba(10,13,11,.72) 0%,rgba(10,13,11,.45) 30%,rgba(10,13,11,.12) 60%,rgba(10,13,11,0) 80%)}
 .motion .cap::before{content:"";position:absolute;inset:-40% -30% -30% -30%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(10,13,11,.74),rgba(10,13,11,.5) 55%,rgba(10,13,11,0))}
@@ -246,10 +248,11 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
 <main>
 <!-- FILM 1 · HERO. Shot 1: the walk up to the Palladian Barn, ending at the open ground-floor doors.
      Dip through dark (scene cut under black). Shot 2: upstairs, the reception floor. Ends on the date section's ivory. -->
-<section class="film film--hero" id="film-arrival" data-film="hero" data-frames="57" data-len="320" style="--len:320svh" data-tone="#141a16" data-out="#f6f1e7" aria-labelledby="hero-h">
+<section class="film film--hero" id="film-arrival" data-film="hero" data-dips="24:.72,25:.38,26:.1,27:0,28:.1,29:.38,30:.72" data-frames="57" data-len="320" style="--len:320svh" data-tone="#141a16" data-out="#f6f1e7" aria-labelledby="hero-h">
   <div class="film__stage">
     <picture class="film__poster"><source media="(orientation:portrait)" type="image/avif" srcset="film/hero/poster-m.avif?v=4"><source media="(orientation:portrait)" type="image/webp" srcset="film/hero/poster-m.webp?v=4"><source type="image/avif" srcset="film/hero/poster-d.avif?v=4"><img src="film/hero/poster-d.webp?v=4" alt="The front of the pale-blue Palladian Barn at The Hill under a clear blue sky." width="1920" height="1080" loading="lazy" fetchpriority="high" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
+    <div class="film__dip" aria-hidden="true"></div>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__veil film__veil--out" aria-hidden="true"></div>
     <p class="film__label">Illustrative motion generated from The Hill’s photos, not filmed</p>
@@ -263,7 +266,7 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
         <ul class="facts-bar" aria-label="At a glance"><li><b>1801</b><span>Palladian Barn</span></li><li><b>300</b><span>acres</span></li><li><b>75–300</b><span>guests</span></li><li><b>May–Oct</b><span>season</span></li></ul>
       </div>
       <div class="cap cap--right" data-at=".18,.43"><p class="kicker">The carriage barn</p><h2 class="split">The Palladian Barn</h2><p>Once the estate’s carriage barn, now a two-level venue with stalls on the first floor and a vast event space on the second.</p></div>
-      <div class="cap" data-at=".6,.8"><p class="kicker">Upstairs</p><h2 class="split">Lit by string lights</h2><p>Set with round, rectangular and farm tables.</p></div>
+      <div class="cap" data-at=".55,.8"><p class="kicker">Upstairs</p><h2 class="split">Lit by string lights</h2><p>Set with round, rectangular and farm tables.</p></div>
     </div>
     <div class="film__meter" aria-hidden="true"><span></span></div>
     <p class="film__hint" aria-hidden="true">Scroll</p>
@@ -335,10 +338,11 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
 
 <!-- FILM 2 · IMPACT. Three real places, each its own shot, joined by a dip through dark:
      the field arch, the hilltop ceremony lawn toward the pines, the Art Barn. Ends on the story section's paper. -->
-<section class="film film--grounds" id="film-grounds" data-film="grounds" data-frames="57" data-len="300" style="--len:300svh" data-tone="#141a16" data-in="#1d2620" data-out="#fbf8f2" aria-label="Film: the grounds">
+<section class="film film--grounds" id="film-grounds" data-film="grounds" data-dips="23:.72,24:.38,25:.1,26:0,27:.1,28:.38,29:.72,41:.72,42:.38,43:.1,44:0,45:.1,46:.38,47:.72" data-frames="57" data-len="300" style="--len:300svh" data-tone="#141a16" data-in="#1d2620" data-out="#fbf8f2" aria-label="Film: the grounds">
   <div class="film__stage">
     <picture class="film__poster"><source type="image/avif" srcset="img/hilltop-ceremony-800.avif 800w, img/hilltop-ceremony-1200.avif 1200w, img/hilltop-ceremony-1600.avif 1600w" sizes="100vw"><source type="image/webp" srcset="img/hilltop-ceremony-800.webp 800w, img/hilltop-ceremony-1200.webp 1200w, img/hilltop-ceremony-1600.webp 1600w" sizes="100vw"><img src="img/hilltop-ceremony.jpg" alt="White ceremony chairs on the hilltop lawn, with tall pines and distant mountains." width="1600" height="1200" loading="lazy" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
+    <div class="film__dip" aria-hidden="true"></div>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__veil film__veil--out" aria-hidden="true"></div>
     <p class="film__label">Illustrative motion generated from The Hill’s photos, not filmed</p>
@@ -421,10 +425,11 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
 
 <!-- FILM 3 · IMPACT: the last song. String lights, the lanterns, then outside to the barn front where the couple dances.
      Each is its own shot, joined by a dip through dark. Ends on the visit section's ink. -->
-<section class="film film--night" id="film-night" data-film="night" data-frames="47" data-len="340" style="--len:340svh" data-tone="#141a16" data-in="#f6f1e7" data-out="#1d2620" aria-labelledby="end-h">
+<section class="film film--night" id="film-night" data-film="night" data-dips="10:.72,11:.38,12:.1,13:0,14:.1,15:.38,16:.72,25:.72,26:.38,27:.1,28:0,29:.1,30:.38,31:.72" data-frames="47" data-len="340" style="--len:340svh" data-tone="#141a16" data-in="#f6f1e7" data-out="#1d2620" aria-labelledby="end-h">
   <div class="film__stage">
     <picture class="film__poster"><source type="image/avif" srcset="img/barn-front-800.avif 800w, img/barn-front-1200.avif 1200w, img/barn-front-1600.avif 1600w" sizes="100vw"><source type="image/webp" srcset="img/barn-front-800.webp 800w, img/barn-front-1200.webp 1200w, img/barn-front-1600.webp 1600w" sizes="100vw"><img src="img/barn-front.jpg" alt="The pale-blue Palladian Barn, a couple dancing in the lit center doorway." width="1600" height="1067" loading="lazy" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
+    <div class="film__dip" aria-hidden="true"></div>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__veil film__veil--out" aria-hidden="true"></div>
     <p class="film__label">Illustrative motion generated from The Hill’s photos, not filmed</p>

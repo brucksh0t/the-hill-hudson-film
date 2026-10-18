@@ -109,7 +109,13 @@
   function Seq(sec,order){
     var n=+sec.dataset.frames,name=sec.dataset.film,set=portrait?'m':'d';
     var cv=sec.querySelector('canvas'),ctx=cv.getContext('2d'),imgs=new Array(n),ok=new Uint8Array(n),asked=new Uint8Array(n);
-    var want=0,drawn=-1,level=0,onscreen=false,dir=1,fails=0;
+    var want=0,drawn=-1,level=0,onscreen=false,dir=1,fails=0,pf=0,dipA=-1;
+    // brightness of each frame across the dips (1 = full); the frames at the edges of each dip load first
+    var B=new Float32Array(n).fill(1),key={},dip=sec.querySelector('.film__dip');
+    (sec.dataset.dips||'').split(',').forEach(function(x){if(!x)return;var kv=x.split(':');B[+kv[0]]=+kv[1];if(+kv[1]===0){key[+kv[0]]=1;key[Math.max(0,+kv[0]-4)]=1;key[Math.min(n-1,+kv[0]+4)]=1;}});
+    // overlay = the darkness the scroll position asks for, less what the drawn frame already carries
+    function setDip(){var a=Math.floor(pf),t=pf-a,b=a+1<n?B[a]*(1-t)+B[a+1]*t:B[n-1],bd=drawn>=0?B[drawn]:1,o=hold?1:bd>0?Math.max(0,Math.min(1,1-b/bd)):0;
+      o=Math.round(o*100)/100;if(o!==dipA){dipA=o;dip.style.opacity=o;}}
     function src(i){return 'film/'+name+'/'+set+'/'+('00'+i).slice(-3)+'.'+ext+'?v='+FV;}
     function fetch(i){asked[i]=1;active++;var im=new Image();im.decoding='async';
       im.onload=function(){ok[i]=1;imgs[i]=im;active--;got++;if(drawn<0||Math.abs(i-want)<Math.abs(drawn-want))paint();pump();};
@@ -118,7 +124,8 @@
     function pick(){
       if(lite||!level)return null;var b=-1,bs=1e9;
       for(var i=0;i<n;i++){if(asked[i])continue;var s=-1,d=(i-want)*dir;
-        if(i===n-1||i%8===0)s=onscreen?(d>=0?d:60-d):order;          // coarse: nearest ahead first while on screen
+        if(key[i])s=order*.01-1;                                   // dip edges and dark frames first
+        else if(i===n-1||i%8===0)s=onscreen?(d>=0?d:60-d):order;          // coarse: nearest ahead first while on screen
         else if(i%4===0){if(level>=2)s=onscreen?(d>=0?d:60-d):10+order;}  // every 4th, same order: the nearest frame is never more than 2 away
         else if(onscreen&&level>=3){if(d>=0&&d<=10)s=20+d;else if(d<0&&d>=-4)s=30-d;} // the frames just ahead (and just behind)
         if(s>=0&&s<bs){bs=s;b=i;}}
@@ -127,19 +134,25 @@
     function poster(){if(lite||asked[0])return;asked[0]=1;var im=new Image();im.decoding='async';
       im.onload=function(){if(!ok[0]){ok[0]=1;imgs[0]=im;paint();}};im.onerror=function(){asked[0]=0;};
       im.src='film/'+name+'/poster-'+set+'.'+ext+'?v='+FV;}
-    function nearest(i){for(var d=0;d<n;d++){if(i-d>=0&&ok[i-d])return i-d;if(i+d<n&&ok[i+d])return i+d;}return -1;}
+    // the nearest loaded frame, but only from the same shot (a dark frame bounds each shot), so a missing frame never
+    // shows another scene; if nothing in this shot has loaded yet the stage holds on dark until its first frame arrives
+    var darks=[];for(var q=0;q<n;q++)if(B[q]===0)darks.push(q);
+    function shotOf(i){var s=0;for(var q=0;q<darks.length;q++)if(i>darks[q])s++;return s;}
+    function nearest(i){var lo=0,hi=n-1;for(var q=0;q<darks.length;q++){if(darks[q]<=i)lo=darks[q];if(darks[q]>=i){hi=darks[q];break;}}
+      for(var d=0;d<n;d++){if(i-d>=lo&&ok[i-d])return i-d;if(i+d<=hi&&ok[i+d])return i+d;if(i-d<lo&&i+d>hi)break;}return -1;}
+    var hold=false;
     var W=0,H=0;
     function size(){var dpr=cap(),w=Math.round(cv.clientWidth*dpr),h=Math.round(cv.clientHeight*dpr);if(w===W&&h===H)return;
       W=cv.width=w;H=cv.height=h;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';drawn=-1;paint();}
     // until a frame is drawn the stage shows the poster (frame 0) as its background, so the stage is never blank
-    function paint(){var k=nearest(want);if(k<0||k===drawn)return;var im=imgs[k],s=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;
-      ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);drawn=k;}
+    function paint(){var k=nearest(want),h=k<0&&!lite&&shotOf(want)>0;if(h!==hold){hold=h;setDip();}if(k<0||k===drawn)return;var im=imgs[k],s=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;
+      ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);drawn=k;setDip();}
     var raf=0;
-    function go(p){var i=Math.max(0,Math.min(n-1,Math.round(p*(n-1))));if(i!==want){dir=i>want?1:-1;want=i;if(onscreen)pump();}
+    function go(p){pf=Math.max(0,Math.min(n-1,p*(n-1)));var i=Math.round(pf);setDip();if(i!==want){dir=i>want?1:-1;want=i;if(onscreen)pump();}
       if(!raf)raf=requestAnimationFrame(function(){raf=0;paint();});}
     function show(v){if(v!==onscreen){onscreen=v;if(v&&level>=2)near(3);pump();}}
     addEventListener('resize',size);size();
-    var api={go:go,pick:pick,fetch:fetch,near:near,show:show,poster:poster,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,ext:ext,lite:lite,cw:W,ch:H,fails:fails,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
+    var api={go:go,pick:pick,fetch:fetch,near:near,show:show,poster:poster,state:function(){return {want:want,drawn:drawn,dip:dipA,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,ext:ext,lite:lite,cw:W,ch:H,fails:fails,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
     return api;
   }
   // AVIF when the browser decodes it (about 40% lighter than WebP at the same sharpness), else WebP
