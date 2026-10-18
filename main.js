@@ -41,26 +41,32 @@
     var html=rows.join('');
     if(html!==out.innerHTML){out.innerHTML=html;
       if(ready&&motion)G.fromTo(out.children,{opacity:0,y:12},{opacity:1,y:0,duration:.5,ease:'power2.out',stagger:.06,clearProps:'transform'});
-      if(ready&&motion&&sun&&f.querySelector('.is-in'))G.fromTo(sun,{scale:.6,transformOrigin:'60px 60px'},{scale:1,duration:.9,ease:'elastic.out(1,.5)'});}
+      if(ready&&motion&&sun&&f.querySelector('.is-in'))G.fromTo(sun,{scale:.82,transformOrigin:'60px 60px'},{scale:1,duration:.7,ease:'power3.out'});}
     var nmv=f.elements.name.value.trim(),ph=f.elements.phone.value.trim(),sign='Thank you,';
     if(nmv)sign+='\nName: '+nmv;if(ph)sign+='\nPhone: '+ph;
     var body='Hi Lisa,\n\nWe’re looking at The Hill for our 2027 wedding. Our dates:\n'+(lines.join('\n')||'- (dates)')+'\n- Guests: about '+g+'\n\nAre any of these open? We’d also love to schedule a tour.\n\n'+sign+'\n';
     send.href='mailto:lisacoon231@gmail.com?subject='+encodeURIComponent('2027 date request')+'&body='+encodeURIComponent(body);
   }
-  f.addEventListener('input',update);f.addEventListener('change',update);update();ready=true;
+  f.addEventListener('submit',function(e){e.preventDefault();send.focus();});f.addEventListener('input',update);f.addEventListener('change',update);update();ready=true;
 
-  /* ---------- mobile bar: one filled primary per screen ---------- */
-  var bar=document.querySelector('[data-mbar]'),date=document.getElementById('date');
-  var ctas=[].slice.call(document.querySelectorAll('.cap--intro .btns,.cap--end .btns'));
-  function onScreen(el){var r=el.getBoundingClientRect();return r.bottom>0&&r.top<innerHeight&&r.width>0;}
-  function shown(el){if(!onScreen(el))return false;var c=el.closest('.cap');return !c||parseFloat(getComputedStyle(c).opacity)>.05&&getComputedStyle(c).visibility!=='hidden';}
+  /* ---------- one filled primary per screen ----------
+     The header (desktop) and bar (mobile) CHECK A DATE are filled unless another filled primary is on screen,
+     in which case they step back to an outline. The bar itself is visible from first paint. */
+  var holds=[].slice.call(document.querySelectorAll('[data-hold]'));
+  var prim=[].slice.call(document.querySelectorAll('main .btn--primary'));
+  function shown(el){var r=el.getBoundingClientRect();if(!(r.bottom>0&&r.top<innerHeight&&r.width>0))return false;
+    var c=el.closest('.cap');if(!c)return true;var cs=getComputedStyle(c);return parseFloat(cs.opacity)>.05&&cs.visibility!=='hidden';}
   var tick=false;
-  function setBar(){tick=false;var on=!onScreen(date)&&!ctas.some(shown);bar.classList.toggle('is-on',on);}
+  function setBar(){tick=false;var other=prim.some(shown);holds.forEach(function(h){h.classList.toggle('is-quiet',other);});}
   function req(){if(!tick){tick=true;requestAnimationFrame(setBar);}}
   addEventListener('scroll',req,{passive:true});addEventListener('resize',req);setBar();
+  setInterval(req,400); // entrance animations move buttons without a scroll event
 
   window.__hill={check:check,motion:function(){return motion;}};
   if(!motion)return;
+
+  /* ---------- tones: collected from the DOM before any pinning (pin-spacers would hide the films) ---------- */
+  var tones=[].slice.call(document.querySelectorAll('main section[data-tone]')).map(function(s){return {el:s,tone:s.dataset.tone,out:s.dataset.out||s.dataset.tone,film:s.classList.contains('film')};});
 
   /* ---------- helpers ---------- */
   function split(el){
@@ -79,104 +85,102 @@
   document.querySelectorAll('.split').forEach(split);
   var small=innerWidth<700;
 
-  /* ---------- frame-sequence player: streamed WebP frames drawn to canvas ---------- */
-  // Tiers: m = 1080x1440 portrait crop (phones), d = 1920x1080. Upscaled 2x from 720p (Topaz Proteus), WebP q85.
-  // The 2560x1440 tier was left out here: at q85 it came to ~74 MB for the three films.
-  var FV='2',TIERS=[{k:'d',w:1920,h:1080}];
+  /* ---------- frame-sequence player: WebP frames drawn to canvas ----------
+     Tiers: m = 1080x1440 portrait crop (phones), d = 1920x1080. Recut from the 2x upscales: clean shots only,
+     joined by a dip through dark; no frame shows two scenes. Frame index = round(progress*(n-1)), linear. */
+  var FV='3';
   function cap(){return Math.min(window.devicePixelRatio||1,2);}
   function Seq(sec){
     var n=+sec.dataset.frames,name=sec.dataset.film,set=small?'m':'d';
-    var cv=sec.querySelector('canvas'),ctx=cv.getContext('2d'),imgs,ok;
-    var want=0,drawn=-1,started=false,queue,active=0,gen=0;
-    function pick(){if(small)return 'm';var need=Math.max(cv.clientWidth*cap()/16*9,cv.clientHeight*cap()),t=TIERS[0];
-      for(var i=0;i<TIERS.length;i++){t=TIERS[i];if(t.h>=need*.9)break;}return t.k;}
+    var cv=sec.querySelector('canvas'),ctx=cv.getContext('2d'),imgs=new Array(n),ok=new Uint8Array(n);
+    var want=0,drawn=-1,queue=[],active=0,phase=0,fails=0;
     function src(i){return 'film/'+name+'/'+set+'/'+('00'+i).slice(-3)+'.webp?v='+FV;}
     function range(s){var a=[];for(var i=0;i<n;i+=s)a.push(i);return a;}
-    // coarse to fine, so scrubbing works before everything has arrived
-    function reset(){gen++;imgs=new Array(n);ok=new Uint8Array(n);drawn=-1;queue=[];active=0;
-      var seen={};[0,n-1].concat(range(16),range(8),range(4),range(2),range(1)).forEach(function(i){if(!seen[i]){seen[i]=1;queue.push(i);}});}
-    reset();
-    function pump(){while(active<6&&queue.length){(function(i,g){active++;var im=new Image();im.decoding='async';
-      im.onload=function(){if(g!==gen)return;ok[i]=1;imgs[i]=im;active--;if(Math.abs(i-want)<Math.abs(drawn-want)||drawn<0)paint();pump();};
-      im.onerror=function(){if(g!==gen)return;active--;pump();};im.src=src(i);})(queue.shift(),gen);}}
-    function start(){if(started)return;started=true;pump();}
+    var coarse=[0,n-1].concat(range(8)),fine=range(4).concat(range(2),range(1)),seen={};
+    function add(list){list.forEach(function(i){if(!seen[i]){seen[i]=1;queue.push(i);}});pump();}
+    function pump(){while(active<4&&queue.length){(function(i){active++;var im=new Image();im.decoding='async';
+      im.onload=function(){ok[i]=1;imgs[i]=im;active--;if(drawn<0||Math.abs(i-want)<Math.abs(drawn-want))paint();pump();};
+      im.onerror=function(){active--;fails++;pump();};im.src=src(i);})(queue.shift());}}
+    // phase 1: a coarse pass (every 8th frame) so scrubbing works at once; phase 2: everything else
+    function start(){if(phase<1){phase=1;add(coarse);}}
+    function full(){start();if(phase<2){phase=2;add(fine);}}
     function nearest(i){for(var d=0;d<n;d++){if(i-d>=0&&ok[i-d])return i-d;if(i+d<n&&ok[i+d])return i+d;}return -1;}
     var W=0,H=0;
-    function size(){var dpr=cap();W=cv.width=Math.round(cv.clientWidth*dpr);H=cv.height=Math.round(cv.clientHeight*dpr);
-      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-      var t=pick();if(t!==set){set=t;reset();if(started)pump();}
-      drawn=-1;paint();}
-    function paint(){var k=nearest(want);if(k<0||(k===drawn))return;var im=imgs[k],s=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;
+    function size(){var dpr=cap(),w=Math.round(cv.clientWidth*dpr),h=Math.round(cv.clientHeight*dpr);if(w===W&&h===H)return;
+      W=cv.width=w;H=cv.height=h;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';drawn=-1;paint();}
+    // until a frame is drawn the stage shows the poster (frame 0) as its background, so the stage is never blank
+    function paint(){var k=nearest(want);if(k<0||k===drawn)return;var im=imgs[k],s=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;
       ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);drawn=k;}
     var raf=0;
-    function go(p){want=Math.max(0,Math.min(n-1,Math.round(p*(n-1))));if(!raf)raf=requestAnimationFrame(function(){raf=0;paint();});}
+    function go(p){var i=Math.max(0,Math.min(n-1,Math.round(p*(n-1))));if(i!==want){want=i;if(phase<2&&i>0)full();}
+      if(!raf)raf=requestAnimationFrame(function(){raf=0;paint();});}
     addEventListener('resize',size);size();
-    return {go:go,start:start,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,cw:W,ch:H,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
+    return {go:go,start:start,full:full,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,cw:W,ch:H,fails:fails,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
   }
 
-  /* ---------- the films: pinned, scroll drives frames, captions dissolve over the footage ---------- */
-  var body=document.body,seqs=[];
+  /* ---------- the films: pinned, one scrubbed timeline per film owns frame, captions and veil ---------- */
+  var seqs=[],hero=document.querySelector('.film--hero');
+  // the hero sits under the notice and header at scroll 0, so its first caption is lifted by that offset
+  hero.style.setProperty('--hoff',Math.round(hero.getBoundingClientRect().top+scrollY)+'px');
   document.querySelectorAll('.film').forEach(function(sec,idx){
     var seq=Seq(sec);seqs.push(seq);
-    var len=+sec.dataset.len*(small?.85:1);
-    if(!idx)seq.start();
-    else new IntersectionObserver(function(e,o){if(e[0].isIntersecting){seq.start();o.disconnect();}},{rootMargin:'250% 0px'}).observe(sec);
-    var inTone=sec.dataset['in']||sec.dataset.tone,out=outTone(sec);
-    var tl=G.timeline({defaults:{ease:'none'},onUpdate:req,scrollTrigger:{trigger:sec,start:'top top',end:'+='+len+'%',pin:true,scrub:.7,anticipatePin:1,
-      onUpdate:req,onToggle:req}});
+    var len=+sec.dataset.len;
+    if(!idx){ // hero: poster first, then a coarse pass after load, the rest once the visitor scrolls or the page is idle
+      var kick=function(){seq.start();};
+      if(document.readyState==='complete')kick();else addEventListener('load',kick);
+      addEventListener('scroll',function once(){seq.full();removeEventListener('scroll',once);},{passive:true});
+    }else{
+      new IntersectionObserver(function(e,o){if(e[0].isIntersecting){seq.start();o.disconnect();}},{rootMargin:'300% 0px'}).observe(sec);
+      new IntersectionObserver(function(e,o){if(e[0].isIntersecting){seq.full();o.disconnect();}},{rootMargin:'150% 0px'}).observe(sec);
+    }
+    var tl=G.timeline({defaults:{ease:'none'},onUpdate:req,scrollTrigger:{trigger:sec,start:'top top',end:'+='+len+'%',pin:true,scrub:.6,anticipatePin:1,onUpdate:req,onToggle:req}});
     var pr={p:0};
     tl.to(pr,{p:1,duration:1,onUpdate:function(){seq.go(pr.p);}},0);
     tl.fromTo(sec.querySelector('.film__meter span'),{scaleY:0},{scaleY:1,duration:1},0);
-    tl.fromTo(sec.querySelector('.film__stage'),{scale:1},{scale:1.04,duration:1},0);
-    var vin=sec.querySelector('.film__veil--in'),vout=sec.querySelector('.film__veil--out');
-    if(vin)tl.fromTo(vin,{opacity:1},{opacity:0,duration:.06},0);
-    if(vout)tl.fromTo(vout,{opacity:0},{opacity:1,duration:.07},.93);
+    // the next section rises over the last 60svh of the pin; the film reaches that section's colour as it does
+    var vout=sec.querySelector('.film__veil--out'),label=sec.querySelector('.film__label'),f=Math.min(.3,60/len);
+    if(vout)tl.fromTo(vout,{opacity:0},{opacity:1,duration:f,ease:'power1.in'},1-f);
+    if(label){if(idx)tl.fromTo(label,{opacity:0},{opacity:1,duration:.03},0);tl.to(label,{opacity:0,duration:.03},1-f);}
     var hint=sec.querySelector('.film__hint');if(hint)tl.to(hint,{opacity:0,duration:.04},.02);
     sec.querySelectorAll('.cap').forEach(function(c){
-      var at=c.dataset.at.split(',').map(Number),a=at[0],b=at[1],kids=[].slice.call(c.children).filter(function(k){return !k.classList.contains('split');}),words=c.querySelectorAll('.wi'),big=c.querySelector('.cap__big');
+      var at=c.dataset.at.split(',').map(Number),a=at[0],b=at[1],kids=[].slice.call(c.children).filter(function(k){return !k.classList.contains('split');}),words=c.querySelectorAll('.wi');
       if(a>0){
-        tl.fromTo(c,{autoAlpha:0},{autoAlpha:1,duration:.035},a);
+        tl.fromTo(c,{autoAlpha:0},{autoAlpha:1,duration:.03},a);
         tl.fromTo(words,{yPercent:110},{yPercent:0,duration:.06,stagger:.006,ease:'power2.out'},a);
-        tl.fromTo(kids,{y:28,opacity:0},{y:0,opacity:1,duration:.05,stagger:.012,ease:'power2.out'},a+.015);
-        if(big)tl.fromTo(big,{yPercent:30,opacity:0},{yPercent:0,opacity:1,duration:b-a,ease:'none'},a);
-      }else G.set(c,{autoAlpha:1});
-      tl.fromTo(c,{y:0},{y:-18,duration:b-a},a);
-      if(b<1)tl.to(c,{autoAlpha:0,filter:'blur(6px)',duration:.04,ease:'power1.in'},b-.04);
+        tl.fromTo(kids,{y:28,opacity:0},{y:0,opacity:1,duration:.05,stagger:.012,ease:'power2.out'},a+.012);
+      }else G.set(c,{opacity:1,visibility:'visible'}); // the H1 card stays in the accessibility tree; it only fades
+      if(b<1){tl.to(kids,{y:-16,opacity:0,duration:.035,stagger:.006,ease:'power1.in'},b-.045);
+        tl.to(words,{yPercent:-110,duration:.04,stagger:.004,ease:'power1.in'},b-.045);
+        if(a>0)tl.to(c,{autoAlpha:0,duration:.01},b);
+        else{tl.to(c,{opacity:0,duration:.01},b);tl.set(c.querySelectorAll('a'),{pointerEvents:'none'},b);}}
     });
   });
 
-  /* ---------- tones: page colour dissolves between sections, computed from scroll position ---------- */
-  var blocks=[].slice.call(document.querySelectorAll('main > section')),zones=[];
-  function outTone(s){return s.dataset.out||s.dataset.tone;}
-  blocks.forEach(function(s,i){
-    var from=i?outTone(blocks[i-1]):s.dataset.tone;
-    if(s.classList.contains('film'))zones.push({st:ST.getAll().filter(function(t){return t.pin===s;})[0],film:1,to:outTone(s),from:s.dataset['in']||from});
-    else if(from!==s.dataset.tone)zones.push({st:ST.create({trigger:s,start:'top 85%',end:'top 35%'}),to:s.dataset.tone,from:from,mix:G.utils.interpolate(from,s.dataset.tone)});
-  });
-  var first=blocks[0].dataset.tone,lastTone='';
-  function paintTone(){var y=scrollY,c=first;
-    for(var i=0;i<zones.length;i++){var z=zones[i],st=z.st;if(!st)continue;
-      if(y<st.start)break;
-      if(z.film){c=z.to;continue;}
-      c=y>=st.end?z.to:z.mix((y-st.start)/(st.end-st.start));}
+  /* ---------- body tone follows the section under the middle of the screen (built before pinning) ---------- */
+  var body=document.body,lastTone='';
+  function paintTone(){var mid=innerHeight/2,c=tones[0].tone;
+    for(var i=0;i<tones.length;i++){var r=tones[i].el.getBoundingClientRect();if(r.top<=mid&&r.bottom>mid){c=tones[i].film&&r.top<=0?tones[i].out:tones[i].tone;}}
     if(c!==lastTone){body.style.backgroundColor=c;lastTone=c;}}
   addEventListener('scroll',paintTone,{passive:true});ST.addEventListener('refresh',paintTone);paintTone();
 
   window.__hill.films=function(){return seqs.map(function(s){return s.state();});};
+  window.__hill.tones=function(){return tones.map(function(t){return t.el.id+':'+t.tone+(t.film?'>'+t.out:'');});};
   /* ---------- hero entrance ---------- */
   var intro=document.querySelector('.cap--intro');
-  G.from(intro.querySelectorAll('h1 .wi'),{yPercent:110,duration:1.2,ease:'power4.out',stagger:.07,delay:.15});
-  G.from(intro.querySelectorAll('.kicker,.lede,.btns,.facts-bar li'),{y:30,opacity:0,duration:1.1,ease:'power3.out',stagger:.09,delay:.35});
+  // keyboard: focusing a hero CTA after the card has faded brings the card back into view
+  intro.addEventListener('focusin',function(){if(parseFloat(getComputedStyle(intro).opacity)<.5)scrollTo(0,0);});
+  G.from(intro.querySelectorAll('h1 .wi'),{yPercent:110,duration:1,ease:'power4.out',stagger:.06,delay:.05});
+  G.from(intro.querySelectorAll('.kicker,.lede,.btns,.facts-bar li'),{y:26,opacity:0,duration:.9,ease:'power3.out',stagger:.07,delay:.2});
 
-  /* ---------- section motion: line reveals, cards from every side, timelines drawing ---------- */
+  /* ---------- section motion: line reveals, slide-ins from every side, timelines drawing ---------- */
   function reveal(sel){document.querySelectorAll(sel).forEach(function(h){
-    G.fromTo(h.querySelectorAll('.wi'),{yPercent:110},{yPercent:0,duration:1,ease:'power4.out',stagger:.05,scrollTrigger:{trigger:h,start:'top 88%',once:true}});});}
+    G.fromTo(h.querySelectorAll('.wi'),{yPercent:110},{yPercent:0,duration:1,ease:'power4.out',stagger:.05,scrollTrigger:{trigger:h,start:'top 95%',once:true}});});}
   reveal('main > section:not(.film) .split');
-  var X=small?40:110,FROM={left:{x:-X,y:30,rotation:-2},right:{x:X,y:30,rotation:2},bottom:{x:0,y:120,rotation:0}};
+  var X=small?40:110,FROM={left:{x:-X,y:30},right:{x:X,y:30},bottom:{x:0,y:110}};
 
   // date
-  G.from('.date__intro > *:not(h2)',{y:40,opacity:0,duration:1,ease:'power3.out',stagger:.08,scrollTrigger:{trigger:'.date',start:'top 75%',once:true}});
-  G.from('.checker',{y:80,opacity:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'.checker',start:'top 90%',once:true}});
+  G.from('.date__intro > *:not(h2)',{y:36,opacity:0,duration:.9,ease:'power3.out',stagger:.07,scrollTrigger:{trigger:'.date',start:'top 90%',once:true}});
+  G.from('.checker',{y:80,opacity:0,duration:1.1,ease:'power3.out',scrollTrigger:{trigger:'.checker',start:'top 92%',once:true}});
   G.from('.dcard',{opacity:0,duration:.9,ease:'power3.out',stagger:.12,x:function(i){return [-60,0,60][i];},y:function(i){return i===1?60:20;},clearProps:'transform',scrollTrigger:{trigger:'.dates',start:'top 92%',once:true}});
 
   // day: the sun crosses the sky as you read
@@ -185,36 +189,35 @@
   document.querySelectorAll('.scene').forEach(function(s){
     var d=FROM[s.dataset.from]||FROM.bottom,fig=s.querySelector('.scene__img'),img=fig.querySelector('img'),copy=s.querySelector('.scene__copy').children;
     var t=G.timeline({scrollTrigger:{trigger:s,start:'top 82%',once:true}});
-    t.fromTo(fig,{x:d.x,y:d.y,rotation:d.rotation,opacity:0,clipPath:'inset(12% 12% 12% 12% round 3px)'},{x:0,y:0,rotation:0,opacity:1,clipPath:'inset(0% 0% 0% 0% round 3px)',duration:1.4,ease:'expo.out'})
-     .fromTo(img,{scale:1.25},{scale:1,duration:1.8,ease:'expo.out'},0)
+    t.fromTo(fig,{x:d.x,y:d.y,opacity:0,clipPath:'inset(12% 12% 12% 12% round 3px)'},{x:0,y:0,opacity:1,clipPath:'inset(0% 0% 0% 0% round 3px)',duration:1.4,ease:'expo.out'})
+     .fromTo(img,{scale:1.2},{scale:1,duration:1.8,ease:'expo.out'},0)
      .from(copy,{y:40,opacity:0,duration:1,ease:'power3.out',stagger:.1},.2);
-    G.fromTo(img,{yPercent:-4},{yPercent:4,ease:'none',scrollTrigger:{trigger:s,start:'top bottom',end:'bottom top',scrub:true}});
   });
 
   // history: the line draws itself, entries settle in from both sides
   var tlist=document.querySelector('[data-tl]'),line=document.createElement('span');line.className='tl__line';line.setAttribute('aria-hidden','true');tlist.prepend(line);
   G.fromTo(line,{scaleY:0},{scaleY:1,ease:'none',scrollTrigger:{trigger:tlist,start:'top 75%',end:'bottom 60%',scrub:.5}});
   tlist.querySelectorAll('li').forEach(function(li){
-    var t=G.timeline({scrollTrigger:{trigger:li,start:'top 85%',once:true}});
+    var t=G.timeline({scrollTrigger:{trigger:li,start:'top 88%',once:true}});
     t.from(li.querySelector('.tl__y'),{x:-50,opacity:0,duration:1,ease:'power3.out'})
      .from(li.querySelector('div'),{x:70,opacity:0,duration:1,ease:'power3.out'},.1);
   });
-  G.fromTo('.story__ghost',{yPercent:30},{yPercent:-30,ease:'none',scrollTrigger:{trigger:'.story',start:'top bottom',end:'bottom top',scrub:true}});
+  G.from('.story__ghost',{opacity:0,x:60,duration:1.6,ease:'power3.out',scrollTrigger:{trigger:'.story',start:'top 70%',once:true}});
 
   // included: list assembles, the pricing card sweeps in
   G.from('.ticks li',{x:-40,opacity:0,duration:.8,ease:'power3.out',stagger:.07,scrollTrigger:{trigger:'.ticks',start:'top 85%',once:true}});
-  G.from('.price',{x:90,rotation:3,opacity:0,duration:1.3,ease:'expo.out',scrollTrigger:{trigger:'.price',start:'top 90%',once:true}});
+  G.from('.price',{x:90,opacity:0,duration:1.3,ease:'expo.out',scrollTrigger:{trigger:'.price',start:'top 90%',once:true}});
 
-  // grounds: frames fly in from different sides, then drift in parallax
+  // grounds: frames slide in from different sides, the photos drift inside their frames
   document.querySelectorAll('.mosaic .m').forEach(function(m){
     var d=FROM[m.dataset.from]||FROM.bottom,img=m.querySelector('img');
-    G.fromTo(m,{x:d.x*.8,y:d.y,rotation:d.rotation,opacity:0},{x:0,y:0,rotation:0,opacity:1,duration:1.3,ease:'expo.out',scrollTrigger:{trigger:m,start:'top 90%',once:true}});
+    G.fromTo(m,{x:d.x*.8,y:d.y,opacity:0},{x:0,y:0,opacity:1,duration:1.3,ease:'expo.out',scrollTrigger:{trigger:m,start:'top 90%',once:true}});
     if(img)G.fromTo(img,{yPercent:-3,scale:1.08},{yPercent:3,scale:1.08,ease:'none',scrollTrigger:{trigger:m,start:'top bottom',end:'bottom top',scrub:true}});
   });
 
   // faq + visit
   G.from('.acc details',{y:40,opacity:0,duration:.8,ease:'power3.out',stagger:.07,scrollTrigger:{trigger:'.acc',start:'top 88%',once:true}});
-  G.from('.ct > div > *:not(h2), .ct address',{y:40,opacity:0,duration:1,ease:'power3.out',stagger:.08,scrollTrigger:{trigger:'.visit',start:'top 80%',once:true}});
+  G.from('.ct > div > *:not(h2), .ct address',{y:40,opacity:0,duration:1,ease:'power3.out',stagger:.08,scrollTrigger:{trigger:'.visit',start:'top 85%',once:true}});
 
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){ST.refresh();});
   addEventListener('load',function(){ST.refresh();req();});

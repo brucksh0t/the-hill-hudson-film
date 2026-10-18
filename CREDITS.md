@@ -2,16 +2,20 @@
 
 Concept preview, not affiliated with The Hill (Hudson Valley Weddings at The Hill), 65 Bells Pond Rd, Hudson, NY.
 
-## Motion: AI-generated from the venue's photos
-The three scroll-scrubbed film sequences in `film/` are **AI-generated motion**. Each clip was made with an image-to-video model in first/last-frame mode, so it starts and ends on one of The Hill's own photos (listed below, cropped to 16:9). The motion between those photos (camera moves, the doors opening, the light and bokeh dissolves) is generated, not filmed. No buildings were added on purpose. Small generated details can differ from the real place, so a visit or call is the way to confirm anything you see.
+## Motion: illustrative, generated from the venue's photos, not filmed
+The three scroll-scrubbed film sequences in `film/` are **AI-generated motion** made from The Hill's own photos (image-to-video, first/last-frame mode). Every film carries the on-screen label "Illustrative motion generated from The Hill's photos, not filmed". Small generated details can differ from the real place, so a visit or call is the way to confirm anything you see.
 
-| Sequence | Clips (first photo → last photo) |
+v3 recut (this version): only clean stretches of the generated clips are used. Each place is its own shot, and shots are joined by a short dip through dark (a cut under black), so **no frame shows two scenes at once**: no crossfades and no double exposures. Where a shot holds still, the camera move (a slow push or sideways truck) is a crop of the 2x frames, i.e. a real continuous move, never a dissolve.
+
+| Sequence | Shots (source clip, frames at 24 fps) |
 |---|---|
-| film/hero (arrival) | palladian-barn → barn-tables (push through the center doors); barn-tables → barn-lanterns (string lights dissolve into lanterns) |
-| film/grounds | field-ceremony → hilltop-ceremony (through the arch); hilltop-ceremony → art-barn (through the pines) |
-| film/night | barn-lanterns → barn-front (out through the doorway to the dusk facade) |
+| film/hero (arrival) | The walk up to the Palladian Barn, ending at the open ground-floor doors (c1 0–108) → dark → upstairs, the reception floor, captioned "Upstairs" (c1 141–192 + c2 1–18, slow push) |
+| film/grounds | The field arch (c4 0–108) → dark → the hilltop ceremony lawn toward the pines (c3 0–70) → dark → the Art Barn (c3 147–192, slow push) |
+| film/night ("the last song") | String lights (c2 72–102) → dark → the lanterns (c2 171–192 + c5 1–12) → dark → outside, the barn front where the couple dances (c5 150–192, slow push) |
 
-Chained clips share a photo as the last frame of one and the first frame of the next, with a 0.5 s soft blend at each join. Frames are WebP (quality 85), cut from the 720p clips after a 2× upscale with Topaz Video AI (Proteus) to 2560×1440: `d/` 1920×1080 for wider screens and `m/` 1080×1440 (the same center crop as before) for phones. The frame selection, joins and colour match the earlier 1120×630 / 450×600 sets. `poster-d.webp` / `poster-m.webp` are light copies of frame 0 for first paint. They stream in coarse-to-fine as you approach each sequence. With reduced motion or JavaScript off, the page shows the real photos and all of the copy instead.
+The moves that misrepresented the building were cut: the ground-floor doors no longer lead into the upstairs hall, and the barn front is never seen from inside the barn.
+
+Frames come from the clips' 2x upscales (an AI video upscaler, 2560×1440), sampled at 10 fps (hero, night) and 8 fps (grounds), with sampling evened out by measured motion so the door push no longer lurches. `d/` is 1920×1080 (WebP q78) and `m/` is a 1080×1440 centre crop for phones (WebP q72). Frame indices map linearly to scroll progress. `poster-d.webp` / `poster-m.webp` are light copies of frame 0, painted first; frames then stream in a coarse pass (every 8th frame) and fill in once you scroll. With reduced motion or JavaScript off, the page shows the real photos and all of the copy instead. The recut script is `film-work/build_frames_v3.py` (not deployed).
 
 ## Photos
 All photos come from The Hill's own website, hudsonvalleyweddings.net, retrieved Oct 12, 2026. Photographers aren't named on the site.
@@ -35,7 +39,7 @@ Full source URLs are listed in `sources.txt`.
 - No photo of the fire pit was found, so it appears only in the text.
 
 ## Facts
-All facts are from hudsonvalleyweddings.net (/, /about, /your-wedding, /contact), retrieved Oct 12, 2026. They cover the season, capacity, inclusions, music times, the 22-a-year limit, history and contact details. The copy and the date-checker logic are reused unchanged from the QA-passed "next" concept.
+All facts are from hudsonvalleyweddings.net (/, /about, /your-wedding, /contact), retrieved Oct 12, 2026. They cover the season, capacity, inclusions, music times, the 22-a-year limit, history and contact details. The date-checker logic is reused unchanged from the QA-passed "next" concept; the copy is that QA-passed copy with v3 edits (officiant line, train line, story heading, de-duplicated film captions).
 
 ## Code
-GSAP 3 and ScrollTrigger, self-hosted in `js/`.
+GSAP 3 and ScrollTrigger, self-hosted in `js/`. Fonts: Fraunces and Mulish (SIL Open Font License), self-hosted in `fonts/` (latin subset). `src/styles.css` is inlined into `index.html` by `tools/build.py`; edit `src/` and rebuild.
