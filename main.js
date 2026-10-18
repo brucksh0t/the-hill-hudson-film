@@ -80,27 +80,38 @@
   var small=innerWidth<700;
 
   /* ---------- frame-sequence player: streamed WebP frames drawn to canvas ---------- */
+  // Tiers: m = 1080x1440 portrait crop (phones), d = 1920x1080. Upscaled 2x from 720p (Topaz Proteus), WebP q85.
+  // The 2560x1440 tier was left out here: at q85 it came to ~74 MB for the three films.
+  var FV='2',TIERS=[{k:'d',w:1920,h:1080}];
+  function cap(){return Math.min(window.devicePixelRatio||1,2);}
   function Seq(sec){
     var n=+sec.dataset.frames,name=sec.dataset.film,set=small?'m':'d';
-    var cv=sec.querySelector('canvas'),ctx=cv.getContext('2d'),imgs=new Array(n),ok=new Uint8Array(n);
-    var want=0,drawn=-1,started=false,queue=[],active=0;
-    function src(i){return 'film/'+name+'/'+set+'/'+('00'+i).slice(-3)+'.webp';}
-    // coarse to fine, so scrubbing works before everything has arrived
-    var seen={};[0,n-1].concat(range(16),range(8),range(4),range(2),range(1)).forEach(function(i){if(!seen[i]){seen[i]=1;queue.push(i);}});
+    var cv=sec.querySelector('canvas'),ctx=cv.getContext('2d'),imgs,ok;
+    var want=0,drawn=-1,started=false,queue,active=0,gen=0;
+    function pick(){if(small)return 'm';var need=Math.max(cv.clientWidth*cap()/16*9,cv.clientHeight*cap()),t=TIERS[0];
+      for(var i=0;i<TIERS.length;i++){t=TIERS[i];if(t.h>=need*.9)break;}return t.k;}
+    function src(i){return 'film/'+name+'/'+set+'/'+('00'+i).slice(-3)+'.webp?v='+FV;}
     function range(s){var a=[];for(var i=0;i<n;i+=s)a.push(i);return a;}
-    function pump(){while(active<6&&queue.length){(function(i){active++;var im=new Image();im.decoding='async';
-      im.onload=function(){ok[i]=1;imgs[i]=im;active--;if(Math.abs(i-want)<Math.abs(drawn-want)||drawn<0)paint();pump();};
-      im.onerror=function(){active--;pump();};im.src=src(i);})(queue.shift());}}
+    // coarse to fine, so scrubbing works before everything has arrived
+    function reset(){gen++;imgs=new Array(n);ok=new Uint8Array(n);drawn=-1;queue=[];active=0;
+      var seen={};[0,n-1].concat(range(16),range(8),range(4),range(2),range(1)).forEach(function(i){if(!seen[i]){seen[i]=1;queue.push(i);}});}
+    reset();
+    function pump(){while(active<6&&queue.length){(function(i,g){active++;var im=new Image();im.decoding='async';
+      im.onload=function(){if(g!==gen)return;ok[i]=1;imgs[i]=im;active--;if(Math.abs(i-want)<Math.abs(drawn-want)||drawn<0)paint();pump();};
+      im.onerror=function(){if(g!==gen)return;active--;pump();};im.src=src(i);})(queue.shift(),gen);}}
     function start(){if(started)return;started=true;pump();}
     function nearest(i){for(var d=0;d<n;d++){if(i-d>=0&&ok[i-d])return i-d;if(i+d<n&&ok[i+d])return i+d;}return -1;}
     var W=0,H=0;
-    function size(){var dpr=Math.min(devicePixelRatio||1,2);W=cv.width=Math.round(cv.clientWidth*dpr);H=cv.height=Math.round(cv.clientHeight*dpr);drawn=-1;paint();}
+    function size(){var dpr=cap();W=cv.width=Math.round(cv.clientWidth*dpr);H=cv.height=Math.round(cv.clientHeight*dpr);
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      var t=pick();if(t!==set){set=t;reset();if(started)pump();}
+      drawn=-1;paint();}
     function paint(){var k=nearest(want);if(k<0||(k===drawn))return;var im=imgs[k],s=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;
       ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);drawn=k;}
     var raf=0;
     function go(p){want=Math.max(0,Math.min(n-1,Math.round(p*(n-1))));if(!raf)raf=requestAnimationFrame(function(){raf=0;paint();});}
     addEventListener('resize',size);size();
-    return {go:go,start:start,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set};}};
+    return {go:go,start:start,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,cw:W,ch:H,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
   }
 
   /* ---------- the films: pinned, scroll drives frames, captions dissolve over the footage ---------- */

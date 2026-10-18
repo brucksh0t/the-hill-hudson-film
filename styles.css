@@ -59,13 +59,13 @@ main,.foot{overflow-x:clip}
 /* ================= film (motion): pinned canvas, captions over footage ================= */
 .motion .film{height:100svh;overflow:hidden;background:var(--night)}
 .motion .film__stage{position:absolute;inset:0;background:var(--night) center/cover no-repeat}
-.motion .film--hero .film__stage{background-image:url(film/hero/d/000.webp)}
-.motion .film--grounds .film__stage{background-image:url(film/grounds/d/000.webp)}
-.motion .film--night .film__stage{background-image:url(film/night/d/000.webp)}
+.motion .film--hero .film__stage{background-image:url(film/hero/poster-d.webp?v=2)}
+.motion .film--grounds .film__stage{background-image:url(film/grounds/poster-d.webp?v=2)}
+.motion .film--night .film__stage{background-image:url(film/night/poster-d.webp?v=2)}
 @media (max-width:699px){
-  .motion .film--hero .film__stage{background-image:url(film/hero/m/000.webp)}
-  .motion .film--grounds .film__stage{background-image:url(film/grounds/m/000.webp)}
-  .motion .film--night .film__stage{background-image:url(film/night/m/000.webp)}
+  .motion .film--hero .film__stage{background-image:url(film/hero/poster-m.webp?v=2)}
+  .motion .film--grounds .film__stage{background-image:url(film/grounds/poster-m.webp?v=2)}
+  .motion .film--night .film__stage{background-image:url(film/night/poster-m.webp?v=2)}
 }
 .motion .film__poster{display:none}
 .motion .film__cv{display:block;position:absolute;inset:0;width:100%;height:100%}

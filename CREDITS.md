@@ -11,7 +11,7 @@ The three scroll-scrubbed film sequences in `film/` are **AI-generated motion**.
 | film/grounds | field-ceremony → hilltop-ceremony (through the arch); hilltop-ceremony → art-barn (through the pines) |
 | film/night | barn-lanterns → barn-front (out through the doorway to the dusk facade) |
 
-Chained clips share a photo as the last frame of one and the first frame of the next, with a 0.5 s soft blend at each join. Frames are WebP: `d/` 1120×630 for wider screens and `m/` 450×600 (center crop) for phones. They stream in coarse-to-fine as you approach each sequence. With reduced motion or JavaScript off, the page shows the real photos and all of the copy instead.
+Chained clips share a photo as the last frame of one and the first frame of the next, with a 0.5 s soft blend at each join. Frames are WebP (quality 85), cut from the 720p clips after a 2× upscale with Topaz Video AI (Proteus) to 2560×1440: `d/` 1920×1080 for wider screens and `m/` 1080×1440 (the same center crop as before) for phones. The frame selection, joins and colour match the earlier 1120×630 / 450×600 sets. `poster-d.webp` / `poster-m.webp` are light copies of frame 0 for first paint. They stream in coarse-to-fine as you approach each sequence. With reduced motion or JavaScript off, the page shows the real photos and all of the copy instead.
 
 ## Photos
 All photos come from The Hill's own website, hudsonvalleyweddings.net, retrieved Oct 12, 2026. Photographers aren't named on the site.
