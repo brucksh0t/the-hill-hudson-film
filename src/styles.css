@@ -10,7 +10,7 @@ a{color:inherit}
 /* one ring everywhere: 2px, 2px offset, >=3:1 on ivory, paper, white, ink, night and forest */
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .wrap{width:min(1180px,90vw);margin:0 auto}
-.flag{position:relative;z-index:41;background:#ece2cc;color:var(--ink);font-size:.95rem;text-align:center;padding:.35rem 1rem}
+.flag{position:relative;z-index:41;height:30px;line-height:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#ece2cc;color:var(--ink);font-size:.85rem;text-align:center;padding:0 1rem}
 .nav{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:1rem;padding:.45rem 4vw;min-height:64px;color:var(--ivory);background:rgba(20,26,22,.86);backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1)}
 .brand{display:inline-flex;align-items:center;gap:.55rem;min-height:44px;text-decoration:none;font-family:var(--disp);font-weight:700;font-size:1.45rem;color:var(--ivory)}
 .nav__links{display:flex;gap:.2rem;margin-left:auto;font-weight:700;font-size:.98rem}
@@ -27,7 +27,7 @@ a[href^="tel"]:not(.btn),a[href^="mailto"]:not(.btn){display:inline-flex;align-i
 .btn--ghost{border-color:var(--ivory);color:var(--ivory);background:transparent}.btn--ghost:hover{background:var(--ivory);color:var(--ink)}
 .btn--outline{border-color:var(--ink);color:var(--ink);background:transparent}.btn--outline:hover{background:var(--ink);color:#fff}
 /* a header/bar primary steps back to an outline while another filled primary is on screen */
-.btn--primary.is-quiet{background:transparent;border-color:var(--ivory);color:var(--ivory)}
+.btn[data-hold]{transition:none}.btn--primary.is-quiet{background:transparent;border-color:var(--ivory);color:var(--ivory)}
 .kicker{font-weight:700;font-size:.85rem;letter-spacing:.18em;text-transform:uppercase}
 .kicker--gold{color:var(--gold-d)}.kicker--rust{color:var(--rust)}
 .tone-dark .kicker--gold{color:var(--gold)}
@@ -68,15 +68,18 @@ html:not(.motion) .film--hero .film__stage::after{content:"";position:absolute;i
 html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5rem 0 calc(2.5rem + var(--barh))}
 
 /* ================= film (motion): pinned canvas, captions over footage ================= */
-.motion .film{height:100svh;overflow:hidden;background:var(--night);z-index:1}
-.motion .film__stage{position:absolute;inset:0;background:var(--night) center/cover no-repeat}
+/* CSS sticky owns the hold (no pin wrapper is inserted, so nothing reflows when the script runs); ScrollTrigger only scrubs */
+.motion .film{height:calc(100svh + var(--len,300svh));overflow:clip;background:var(--night);z-index:1}
+.motion .film__stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--night) center/cover no-repeat}
+/* the hero sits under the 30px notice and 64px header at scroll 0, so its first card is lifted by that much */
+.motion .film--hero{--hoff:94px}
 .motion .film--hero .film__stage{background-image:url(film/hero/poster-d.webp?v=3)}
-.motion .film--grounds .film__stage{background-image:url(film/grounds/poster-d.webp?v=3)}
-.motion .film--night .film__stage{background-image:url(film/night/poster-d.webp?v=3)}
+.motion.ready .film--grounds .film__stage{background-image:url(film/grounds/poster-d.webp?v=3)}
+.motion.ready .film--night .film__stage{background-image:url(film/night/poster-d.webp?v=3)}
 @media (max-width:699px){
   .motion .film--hero .film__stage{background-image:url(film/hero/poster-m.webp?v=3)}
-  .motion .film--grounds .film__stage{background-image:url(film/grounds/poster-m.webp?v=3)}
-  .motion .film--night .film__stage{background-image:url(film/night/poster-m.webp?v=3)}
+  .motion.ready .film--grounds .film__stage{background-image:url(film/grounds/poster-m.webp?v=3)}
+  .motion.ready .film--night .film__stage{background-image:url(film/night/poster-m.webp?v=3)}
 }
 .motion .film__poster{display:none}
 .motion .film__cv{display:block;position:absolute;inset:0;width:100%;height:100%}
@@ -96,6 +99,11 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .cap--intro::before{inset:-22% -18% -14% -22%;background:radial-gradient(closest-side,rgba(10,13,11,.82),rgba(10,13,11,.64) 60%,rgba(10,13,11,0))}
 .motion .cap--intro{max-width:none;right:max(5vw,calc((100vw - 1180px)/2));bottom:calc(5vh + var(--barh) + var(--safe) + var(--hoff,0px))}
 .motion .cap--intro .lede{max-width:34em}
+/* the hero card is visible from first paint (no script needed) and settles in with CSS */
+.motion .cap--intro{opacity:1;visibility:visible}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.motion .cap--intro>*{animation:rise .9s var(--ease) backwards}
+.motion .cap--intro>:nth-child(2){animation-delay:.08s}.motion .cap--intro>:nth-child(3){animation-delay:.2s}.motion .cap--intro>:nth-child(4){animation-delay:.3s}.motion .cap--intro>:nth-child(5){animation-delay:.4s}
 .motion .cap--end{max-width:36rem;bottom:calc(8vh + var(--barh) + var(--safe))}
 .motion .cap--end::before{inset:-30% -24% -18% -24%;background:radial-gradient(closest-side,rgba(10,13,11,.82),rgba(10,13,11,.6) 60%,rgba(10,13,11,0))}
 .motion .film__meter{display:block;position:absolute;z-index:4;right:2.2vw;top:50%;width:2px;height:22vh;transform:translateY(-50%);background:rgba(246,241,231,.18);border-radius:2px;overflow:hidden}

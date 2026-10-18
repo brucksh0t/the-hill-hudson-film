@@ -54,18 +54,19 @@
      in which case they step back to an outline. The bar itself is visible from first paint. */
   var holds=[].slice.call(document.querySelectorAll('[data-hold]'));
   var prim=[].slice.call(document.querySelectorAll('main .btn--primary'));
-  function shown(el){var r=el.getBoundingClientRect();if(!(r.bottom>0&&r.top<innerHeight&&r.width>0))return false;
+  function shown(el){var r=el.getBoundingClientRect();if(!(r.bottom>-.15*innerHeight&&r.top<1.2*innerHeight&&r.width>0))return false; // look ahead so the hold steps back before another primary arrives
     var c=el.closest('.cap');if(!c)return true;var cs=getComputedStyle(c);return parseFloat(cs.opacity)>.05&&cs.visibility!=='hidden';}
   var tick=false;
   function setBar(){tick=false;var other=prim.some(shown);holds.forEach(function(h){h.classList.toggle('is-quiet',other);});}
   function req(){if(!tick){tick=true;requestAnimationFrame(setBar);}}
   addEventListener('scroll',req,{passive:true});addEventListener('resize',req);setBar();
-  setInterval(req,400); // entrance animations move buttons without a scroll event
+  setInterval(req,200); // entrance animations move buttons without a scroll event
 
   window.__hill={check:check,motion:function(){return motion;}};
   if(!motion)return;
 
-  /* ---------- tones: collected from the DOM before any pinning (pin-spacers would hide the films) ---------- */
+  /* ---------- tones: collected from main section[data-tone] up front (no pin-spacers can hide the films) ---------- */
+  root.classList.add('ready'); // later films' posters load once the hero has painted
   var tones=[].slice.call(document.querySelectorAll('main section[data-tone]')).map(function(s){return {el:s,tone:s.dataset.tone,out:s.dataset.out||s.dataset.tone,film:s.classList.contains('film')};});
 
   /* ---------- helpers ---------- */
@@ -118,10 +119,8 @@
     return {go:go,start:start,full:full,state:function(){return {want:want,drawn:drawn,loaded:ok.reduce(function(a,b){return a+b;},0),n:n,set:set,cw:W,ch:H,fails:fails,src:imgs[drawn]?imgs[drawn].naturalWidth+'x'+imgs[drawn].naturalHeight:null};}};
   }
 
-  /* ---------- the films: pinned, one scrubbed timeline per film owns frame, captions and veil ---------- */
-  var seqs=[],hero=document.querySelector('.film--hero');
-  // the hero sits under the notice and header at scroll 0, so its first caption is lifted by that offset
-  hero.style.setProperty('--hoff',Math.round(hero.getBoundingClientRect().top+scrollY)+'px');
+  /* ---------- the films: held by CSS sticky; one scrubbed timeline per film owns frame, captions and veil ---------- */
+  var seqs=[];
   document.querySelectorAll('.film').forEach(function(sec,idx){
     var seq=Seq(sec);seqs.push(seq);
     var len=+sec.dataset.len;
@@ -133,7 +132,7 @@
       new IntersectionObserver(function(e,o){if(e[0].isIntersecting){seq.start();o.disconnect();}},{rootMargin:'300% 0px'}).observe(sec);
       new IntersectionObserver(function(e,o){if(e[0].isIntersecting){seq.full();o.disconnect();}},{rootMargin:'150% 0px'}).observe(sec);
     }
-    var tl=G.timeline({defaults:{ease:'none'},onUpdate:req,scrollTrigger:{trigger:sec,start:'top top',end:'+='+len+'%',pin:true,scrub:.6,anticipatePin:1,onUpdate:req,onToggle:req}});
+    var tl=G.timeline({defaults:{ease:'none'},onUpdate:req,scrollTrigger:{trigger:sec,start:'top top',end:'bottom bottom',scrub:.6,onUpdate:req,onToggle:req}});
     var pr={p:0};
     tl.to(pr,{p:1,duration:1,onUpdate:function(){seq.go(pr.p);}},0);
     tl.fromTo(sec.querySelector('.film__meter span'),{scaleY:0},{scaleY:1,duration:1},0);
@@ -166,11 +165,10 @@
   window.__hill.films=function(){return seqs.map(function(s){return s.state();});};
   window.__hill.tones=function(){return tones.map(function(t){return t.el.id+':'+t.tone+(t.film?'>'+t.out:'');});};
   /* ---------- hero entrance ---------- */
+  // (the hero card's entrance is CSS, so it shows before this script loads)
   var intro=document.querySelector('.cap--intro');
   // keyboard: focusing a hero CTA after the card has faded brings the card back into view
   intro.addEventListener('focusin',function(){if(parseFloat(getComputedStyle(intro).opacity)<.5)scrollTo(0,0);});
-  G.from(intro.querySelectorAll('h1 .wi'),{yPercent:110,duration:1,ease:'power4.out',stagger:.06,delay:.05});
-  G.from(intro.querySelectorAll('.kicker,.lede,.btns,.facts-bar li'),{y:26,opacity:0,duration:.9,ease:'power3.out',stagger:.07,delay:.2});
 
   /* ---------- section motion: line reveals, slide-ins from every side, timelines drawing ---------- */
   function reveal(sel){document.querySelectorAll(sel).forEach(function(h){
@@ -220,6 +218,6 @@
   G.from('.ct > div > *:not(h2), .ct address',{y:40,opacity:0,duration:1,ease:'power3.out',stagger:.08,scrollTrigger:{trigger:'.visit',start:'top 85%',once:true}});
 
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){ST.refresh();});
-  addEventListener('load',function(){ST.refresh();req();});
+  if(document.readyState==='complete')setTimeout(function(){ST.refresh();req();},0);else addEventListener('load',function(){ST.refresh();req();});
   req();
 })();

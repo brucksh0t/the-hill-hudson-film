@@ -21,15 +21,15 @@
   <a class="brand" href="#top" aria-label="The Hill, back to top"><svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="M4 30 Q20 8 36 30" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="20" cy="15" r="4.5" fill="#d8a85a"/><path d="M2 33h36" stroke="currentColor" stroke-width="2.2"/></svg><span>The Hill</span></a>
   <nav class="nav__links" aria-label="Main"><a href="#date">2027 dates</a><a href="#day">The day</a><a href="#story">Since 1801</a><a href="#included">Included</a><a href="#grounds">Grounds</a><a href="#visit">Visit</a></nav>
   <a class="btn btn--ghost btn--sm nav__tour" href="tel:+18457589002">CALL TO TOUR</a>
-  <a class="btn btn--primary btn--sm nav__cta" href="#date" data-hold>CHECK A DATE</a>
+  <a class="btn btn--primary btn--sm nav__cta is-quiet" href="#date" data-hold>CHECK A DATE</a>
 </header>
 
 <main>
 <!-- FILM 1 · HERO. Shot 1: the walk up to the Palladian Barn, ending at the open ground-floor doors.
      Dip through dark (scene cut under black). Shot 2: upstairs, the reception floor. Ends on the date section's ivory. -->
-<section class="film film--hero" id="film-arrival" data-film="hero" data-frames="75" data-len="320" data-tone="#141a16" data-out="#f6f1e7" aria-labelledby="hero-h">
+<section class="film film--hero" id="film-arrival" data-film="hero" data-frames="75" data-len="320" style="--len:320svh" data-tone="#141a16" data-out="#f6f1e7" aria-labelledby="hero-h">
   <div class="film__stage">
-    <picture class="film__poster"><source type="image/webp" srcset="img/palladian-barn-800.webp 800w, img/palladian-barn-1600.webp 1600w" sizes="100vw"><img src="img/palladian-barn.jpg" alt="The pale-blue Palladian Barn at The Hill in low sun, its white doors facing the lawn." width="1600" height="1062" fetchpriority="high" decoding="async"></picture>
+    <picture class="film__poster"><source type="image/webp" srcset="img/palladian-barn-800.webp 800w, img/palladian-barn-1600.webp 1600w" sizes="100vw"><img src="img/palladian-barn.jpg" alt="The pale-blue Palladian Barn at The Hill in low sun, its white doors facing the lawn." width="1600" height="1062" loading="lazy" fetchpriority="high" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__veil film__veil--out" aria-hidden="true"></div>
@@ -115,7 +115,7 @@
 
 <!-- FILM 2 · IMPACT. Three real places, each its own shot, joined by a dip through dark:
      the field arch, the hilltop ceremony lawn toward the pines, the Art Barn. Ends on the story section's paper. -->
-<section class="film film--grounds" id="film-grounds" data-film="grounds" data-frames="77" data-len="300" data-tone="#141a16" data-in="#1d2620" data-out="#fbf8f2" aria-label="Film: the grounds">
+<section class="film film--grounds" id="film-grounds" data-film="grounds" data-frames="77" data-len="300" style="--len:300svh" data-tone="#141a16" data-in="#1d2620" data-out="#fbf8f2" aria-label="Film: the grounds">
   <div class="film__stage">
     <picture class="film__poster"><source type="image/webp" srcset="img/hilltop-ceremony-800.webp 800w, img/hilltop-ceremony-1600.webp 1600w" sizes="100vw"><img src="img/hilltop-ceremony.jpg" alt="White ceremony chairs on the hilltop lawn, with tall pines and distant mountains." width="1600" height="1200" loading="lazy" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
@@ -201,7 +201,7 @@
 
 <!-- FILM 3 · IMPACT: the last song. String lights, the lanterns, then outside to the barn front where the couple dances.
      Each is its own shot, joined by a dip through dark. Ends on the visit section's ink. -->
-<section class="film film--night" id="film-night" data-film="night" data-frames="47" data-len="340" data-tone="#141a16" data-in="#f6f1e7" data-out="#1d2620" aria-labelledby="end-h">
+<section class="film film--night" id="film-night" data-film="night" data-frames="47" data-len="340" style="--len:340svh" data-tone="#141a16" data-in="#f6f1e7" data-out="#1d2620" aria-labelledby="end-h">
   <div class="film__stage">
     <picture class="film__poster"><source type="image/webp" srcset="img/barn-front-800.webp 800w, img/barn-front-1600.webp 1600w" sizes="100vw"><img src="img/barn-front.jpg" alt="Evening at the pale-blue Palladian Barn, a couple dancing in the glowing center doorway." width="1600" height="1067" loading="lazy" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
@@ -235,10 +235,15 @@
 
 <div class="mbar" data-mbar role="navigation" aria-label="Quick actions">
   <a class="btn btn--ghost" href="tel:+18457589002" aria-label="Call to tour: 845-758-9002">CALL TO TOUR</a>
-  <a class="btn btn--primary" href="#date" data-hold>CHECK A DATE</a>
+  <a class="btn btn--primary is-quiet" href="#date" data-hold>CHECK A DATE</a>
 </div>
-<script src="js/gsap.min.js" defer></script>
-<script src="js/ScrollTrigger.min.js" defer></script>
-<script src="main.js?v=3" defer></script>
+<script>
+/* Motion scripts load after the poster and copy have painted. If one fails, the page falls back to the static photo layout. */
+(function(){function boot(){var L=['js/gsap.min.js','js/ScrollTrigger.min.js','main.js?v=3'],i=0;
+  (function next(){if(i>=L.length)return;var s=document.createElement('script'),src=L[i++];s.src=src;s.onload=next;
+    s.onerror=function(){document.documentElement.classList.remove('motion');if(src.indexOf('main')<0){i=L.length-1;next();}};document.body.appendChild(s);})();}
+ function later(){requestAnimationFrame(function(){setTimeout(boot,0);});}
+ if(document.readyState==='complete')later();else addEventListener('load',later);})();
+</script>
 </body>
 </html>
