@@ -22,7 +22,7 @@
   <a class="brand" href="#top" aria-label="The Hill, back to top"><svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="M4 30 Q20 8 36 30" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="20" cy="15" r="4.5" fill="#d8a85a"/><path d="M2 33h36" stroke="currentColor" stroke-width="2.2"/></svg><span>The Hill</span></a>
   <nav class="nav__links" aria-label="Main"><a href="#date">2027 dates</a><a href="#day">The day</a><a href="#story">Since 1801</a><a href="#included">Included</a><a href="#grounds">Grounds</a><a href="#visit">Visit</a></nav>
   <a class="btn btn--ghost btn--sm nav__tour" href="tel:+18457589002">CALL TO TOUR</a>
-  <a class="btn btn--primary btn--sm nav__cta" href="#date">CHECK A DATE</a>
+  <a class="btn btn--primary btn--sm nav__cta is-quiet" href="#date">CHECK A DATE</a>
 </header>
 
 <main>
@@ -251,14 +251,16 @@
  if(document.readyState==='complete')later();else addEventListener('load',later);})();
 </script>
 <script>
-/* hide the sticky CHECK A DATE buttons while an inline CHECK A 2027 DATE button is actually on screen (IntersectionObserver + caption visibility) */
-(function(){if(!('IntersectionObserver' in window))return;var holds=[].slice.call(document.querySelectorAll('[data-hold]')),seen=new Set(),t=0;
+/* One filled CTA per screen. Mobile bar: CHECK A DATE drops out while an inline CHECK A 2027 DATE is on screen.
+   Header (desktop): CHECK A DATE stays visible; it is an outline (the no-JS default) while any filled primary in main is on screen, solid otherwise. */
+(function(){if(!('IntersectionObserver' in window))return;var holds=[].slice.call(document.querySelectorAll('[data-hold]')),nav=document.querySelector('.nav__cta'),seen=new Set(),t=0;
  function vis(b){var c=b.closest('.cap');if(!c)return true;var cs=getComputedStyle(c);return parseFloat(cs.opacity)>.05&&cs.visibility!=='hidden';}
- function upd(){t=0;var off=false;seen.forEach(function(b){if(vis(b))off=true;});holds.forEach(function(h){h.classList.toggle('is-off',off);});}
+ function upd(){t=0;var date=false,any=false;seen.forEach(function(b){if(vis(b)){any=true;if(b.matches('.btns a.btn--lg[href="#date"]'))date=true;}});
+  holds.forEach(function(h){h.classList.toggle('is-off',date);});if(nav)nav.classList.toggle('is-quiet',any);}
  function req(){if(!t)t=requestAnimationFrame(upd);}
- var io=new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?seen.add(e.target):seen.delete(e.target);});req();});
- [].forEach.call(document.querySelectorAll('.btns a.btn--lg[href="#date"]'),function(b){io.observe(b);});
- addEventListener('scroll',function(){if(seen.size)req();},{passive:true});setInterval(function(){if(seen.size)req();},250);})();
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?seen.add(e.target):seen.delete(e.target);});req();},{rootMargin:'-64px 0px 0px 0px'});
+ [].forEach.call(document.querySelectorAll('main .btn--primary'),function(b){io.observe(b);});
+ addEventListener('scroll',req,{passive:true});setInterval(req,250);req();})();
 </script>
 </body>
 </html>
