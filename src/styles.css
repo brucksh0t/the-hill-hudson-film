@@ -62,15 +62,8 @@ html:not(.motion) .film--hero .film__still{display:block;position:absolute;z-ind
 .facts-bar b{font-family:var(--disp);font-weight:400;font-size:clamp(1.4rem,3vw,2.2rem);line-height:1}
 .facts-bar span{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:#eee6d6}
 /* hero without motion (reduced motion / no JS): the copy sits on the photo, so H1 and CTA share the first screen */
-html:not(.motion) .film--hero .film__stage{min-height:calc(100svh - 96px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
-html:not(.motion) .film--hero .film__poster{position:absolute;inset:0}
 html:not(.motion) .film:not(.film--hero) .film__poster{display:flex;justify-content:center;background:var(--night)}
 html:not(.motion) .film:not(.film--hero) .film__poster img{width:auto;height:auto;max-width:min(100%,calc(1600px / var(--dpr)));max-height:min(78svh,calc(1067px / var(--dpr)))}
-html:not(.motion) .film--hero .film__poster{display:flex;justify-content:center;align-items:flex-start;background:var(--night)}
-html:not(.motion) .film--hero .film__poster img{--pw:1920px;--ph:1080px;width:auto;height:auto;max-width:min(100%,calc(var(--pw) / var(--dpr)));max-height:min(100svh,calc(var(--ph) / var(--dpr)));object-fit:cover;object-position:50% 30%}
-@media (orientation:portrait){html:not(.motion) .film--hero .film__poster img{--pw:1080px;--ph:1440px}}
-html:not(.motion) .film--hero .film__stage::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,13,11,.92) 0%,rgba(10,13,11,.84) 50%,rgba(10,13,11,.66) 80%,rgba(10,13,11,.5) 100%)}
-html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5rem 0 calc(2.5rem + var(--barh))}
 
 /* ================= film (motion): pinned canvas, captions over footage ================= */
 /* CSS sticky owns the hold (no pin wrapper is inserted, so nothing reflows when the script runs); ScrollTrigger only scrubs */
@@ -109,6 +102,7 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .cap--intro::before{background:rgba(10,13,11,.7)}
 .motion .cap--intro{max-width:none;width:fit-content;right:auto;bottom:calc(5vh + var(--barh) + var(--safe) + var(--hoff,0px))}
 .motion .cap--intro h1{max-width:10.5em}
+.motion .cap--intro .facts-bar{max-width:none}
 .motion .cap--intro .lede{max-width:34em;text-shadow:0 1px 3px rgba(0,0,0,.75)}
 /* the hero card is visible from first paint (no script needed) and settles in with CSS */
 .motion .cap--intro{opacity:1;visibility:visible}
@@ -242,6 +236,7 @@ address{font-style:normal;line-height:1.7}.muted{color:#b9bfb7}
   /* the bar is there from the first paint */
   .mbar{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;position:fixed;left:0;right:0;bottom:0;z-index:50;padding:.5rem .6rem calc(.5rem + var(--safe));background:rgba(20,26,22,.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
   .mbar .btn{min-height:50px;font-size:.9rem;letter-spacing:.1em;padding:.2em .4em}
+  .mbar:has(.is-off){grid-template-columns:1fr}.mbar .btn.is-off{display:none}
   .btn--lg{font-size:1rem;min-height:56px}
   .cap .btns .btn{flex:1 1 100%}
   .facts-bar{grid-template-columns:repeat(2,1fr);row-gap:.6rem}
@@ -263,7 +258,33 @@ address{font-style:normal;line-height:1.7}.muted{color:#b9bfb7}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 /* narrow phones: the facts bar steps aside so the hero card clears the film label (the facts repeat below) */
 @media (max-width:380px){.motion .cap--intro .facts-bar{display:none}}
-html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82);padding:1rem 1.1rem;border-radius:3px}
+/* hero without motion (reduced motion / no JS): photo + solid forest panel. The still never renders above 1.0x
+   (box <= file px / DPR; cover only crops), the copy sits on the panel, never over the photo. */
+html:not(.motion) .film--hero .film__stage{--phw:min(100%,calc(1080px / var(--dpr)));display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;background:var(--forest);padding-bottom:var(--barh)}
+html:not(.motion) .film--hero .film__poster{grid-row:1;width:var(--phw);display:block;margin-top:clamp(0px,calc((100% - var(--phw)) / 2),1.25rem)}
+html:not(.motion) .film--hero .film__poster img{display:block;width:100%;height:min(34svh,calc(1440px / var(--dpr)));max-height:none;object-fit:cover;object-position:50% 30%}
+html:not(.motion) .film--hero .film__still{top:calc(clamp(0px,calc((100% - var(--phw)) / 2),1.25rem) + .5rem);left:max(4vw,calc((100% - var(--phw)) / 2 + .5rem))}
+html:not(.motion) .film--hero .film__caps{display:contents}
+html:not(.motion) .film--hero .cap{width:min(1180px,90vw)}
+html:not(.motion) .film--hero .cap--intro{padding:1.6rem 0 1.4rem}
+html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.35);padding:1rem 1.1rem;border-radius:2px;margin-bottom:1rem}
+@media (min-width:600px) and (max-width:899px){
+  html:not(.motion) .film--hero .film__stage{--phw:min(100vw,calc(1920px / var(--dpr)))}
+  html:not(.motion) .film--hero .film__poster{margin-top:0}
+  html:not(.motion) .film--hero .film__poster img{height:min(calc(var(--phw) * .5625),calc(1080px / var(--dpr)))}
+}
+@media (min-width:900px){
+  html:not(.motion) .film--hero .film__stage{--phw:min(calc(1920px / var(--dpr)),calc(100vw - 440px));--pht:calc(var(--phw) * .5625);grid-template-columns:minmax(0,1fr) var(--phw);grid-template-rows:var(--pht) auto auto 1fr;justify-items:stretch;align-items:start;padding-bottom:0}
+  html:not(.motion) .film--hero .film__poster{grid-column:2;grid-row:1;width:100%;margin:0}
+  html:not(.motion) .film--hero .film__poster img{height:var(--pht)}
+  html:not(.motion) .film--hero .film__still{top:.7rem;left:calc(100% - var(--phw) + .7rem);right:auto;max-width:calc(var(--phw) - 1.4rem)}
+  html:not(.motion) .film--hero .cap{width:auto}
+  html:not(.motion) .film--hero .cap--intro{grid-column:1;grid-row:1 / 5;align-self:stretch;padding:clamp(1.5rem,3vw,3rem) clamp(1.5rem,3vw,3rem) 2.5rem max(5vw,calc((100vw - 1180px)/2))}
+  html:not(.motion) .film--hero .cap--intro h1{font-size:clamp(2.4rem,3.6vw,3.6rem)}
+  html:not(.motion) .film--hero .cap--intro .btns .btn{flex:1 1 auto}
+  html:not(.motion) .film--hero .cap--intro .facts-bar{grid-template-columns:repeat(2,1fr);row-gap:.6rem}
+  html:not(.motion) .film--hero .cap:not(.cap--intro){grid-column:2;margin:1.2rem 1.5rem 0}
+}
 
 /* ================= type system (DD v1.3): Fraunces for headlines only, pinned optical size; one label, one button, one tracking ================= */
 :root{--fv-disp:"opsz" 48,"SOFT" 50,"WONK" 0;--fv-sec:"opsz" 28,"SOFT" 50,"WONK" 0;--fv-num:"opsz" 72,"SOFT" 50,"WONK" 0}

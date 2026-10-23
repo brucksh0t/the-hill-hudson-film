@@ -70,15 +70,8 @@ html:not(.motion) .film--hero .film__still{display:block;position:absolute;z-ind
 .facts-bar li{padding:1rem .4rem 0;display:flex;flex-direction:column}
 .facts-bar b{font-family:var(--disp);font-weight:400;font-size:clamp(1.4rem,3vw,2.2rem);line-height:1}
 .facts-bar span{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:#eee6d6}
-html:not(.motion) .film--hero .film__stage{min-height:calc(100svh - 96px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
-html:not(.motion) .film--hero .film__poster{position:absolute;inset:0}
 html:not(.motion) .film:not(.film--hero) .film__poster{display:flex;justify-content:center;background:var(--night)}
 html:not(.motion) .film:not(.film--hero) .film__poster img{width:auto;height:auto;max-width:min(100%,calc(1600px / var(--dpr)));max-height:min(78svh,calc(1067px / var(--dpr)))}
-html:not(.motion) .film--hero .film__poster{display:flex;justify-content:center;align-items:flex-start;background:var(--night)}
-html:not(.motion) .film--hero .film__poster img{--pw:1920px;--ph:1080px;width:auto;height:auto;max-width:min(100%,calc(var(--pw) / var(--dpr)));max-height:min(100svh,calc(var(--ph) / var(--dpr)));object-fit:cover;object-position:50% 30%}
-@media (orientation:portrait){html:not(.motion) .film--hero .film__poster img{--pw:1080px;--ph:1440px}}
-html:not(.motion) .film--hero .film__stage::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,13,11,.92) 0%,rgba(10,13,11,.84) 50%,rgba(10,13,11,.66) 80%,rgba(10,13,11,.5) 100%)}
-html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5rem 0 calc(2.5rem + var(--barh))}
 .motion .film{height:calc(100svh + var(--len,300svh));overflow:clip;background:var(--night);z-index:1}
 .motion .film__stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--night) center/cover no-repeat}
 .motion .film--hero{--hoff:94px}
@@ -109,6 +102,7 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .cap--intro::before{background:rgba(10,13,11,.7)}
 .motion .cap--intro{max-width:none;width:fit-content;right:auto;bottom:calc(5vh + var(--barh) + var(--safe) + var(--hoff,0px))}
 .motion .cap--intro h1{max-width:10.5em}
+.motion .cap--intro .facts-bar{max-width:none}
 .motion .cap--intro .lede{max-width:34em;text-shadow:0 1px 3px rgba(0,0,0,.75)}
 .motion .cap--intro{opacity:1;visibility:visible}
 @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
@@ -220,6 +214,7 @@ address{font-style:normal;line-height:1.7}.muted{color:#b9bfb7}
 .mosaic{grid-template-columns:minmax(0,1fr)}.m--wide,.m--tall,.m--small,.m--note{grid-column:auto;grid-row:auto}.m--small{max-width:min(340px,calc(800px / var(--dpr)))}.m--tall{max-width:600px}
 .mbar{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;position:fixed;left:0;right:0;bottom:0;z-index:50;padding:.5rem .6rem calc(.5rem + var(--safe));background:rgba(20,26,22,.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .mbar .btn{min-height:50px;font-size:.9rem;letter-spacing:.1em;padding:.2em .4em}
+.mbar:has(.is-off){grid-template-columns:1fr}.mbar .btn.is-off{display:none}
 .btn--lg{font-size:1rem;min-height:56px}
 .cap .btns .btn{flex:1 1 100%}
 .facts-bar{grid-template-columns:repeat(2,1fr);row-gap:.6rem}
@@ -240,7 +235,31 @@ address{font-style:normal;line-height:1.7}.muted{color:#b9bfb7}
 @media (max-height:740px) and (max-width:899px){.cap--intro .facts-bar{display:none}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 @media (max-width:380px){.motion .cap--intro .facts-bar{display:none}}
-html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82);padding:1rem 1.1rem;border-radius:3px}
+html:not(.motion) .film--hero .film__stage{--phw:min(100%,calc(1080px / var(--dpr)));display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;background:var(--forest);padding-bottom:var(--barh)}
+html:not(.motion) .film--hero .film__poster{grid-row:1;width:var(--phw);display:block;margin-top:clamp(0px,calc((100% - var(--phw)) / 2),1.25rem)}
+html:not(.motion) .film--hero .film__poster img{display:block;width:100%;height:min(34svh,calc(1440px / var(--dpr)));max-height:none;object-fit:cover;object-position:50% 30%}
+html:not(.motion) .film--hero .film__still{top:calc(clamp(0px,calc((100% - var(--phw)) / 2),1.25rem) + .5rem);left:max(4vw,calc((100% - var(--phw)) / 2 + .5rem))}
+html:not(.motion) .film--hero .film__caps{display:contents}
+html:not(.motion) .film--hero .cap{width:min(1180px,90vw)}
+html:not(.motion) .film--hero .cap--intro{padding:1.6rem 0 1.4rem}
+html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.35);padding:1rem 1.1rem;border-radius:2px;margin-bottom:1rem}
+@media (min-width:600px) and (max-width:899px){
+html:not(.motion) .film--hero .film__stage{--phw:min(100vw,calc(1920px / var(--dpr)))}
+html:not(.motion) .film--hero .film__poster{margin-top:0}
+html:not(.motion) .film--hero .film__poster img{height:min(calc(var(--phw) * .5625),calc(1080px / var(--dpr)))}
+}
+@media (min-width:900px){
+html:not(.motion) .film--hero .film__stage{--phw:min(calc(1920px / var(--dpr)),calc(100vw - 440px));--pht:calc(var(--phw) * .5625);grid-template-columns:minmax(0,1fr) var(--phw);grid-template-rows:var(--pht) auto auto 1fr;justify-items:stretch;align-items:start;padding-bottom:0}
+html:not(.motion) .film--hero .film__poster{grid-column:2;grid-row:1;width:100%;margin:0}
+html:not(.motion) .film--hero .film__poster img{height:var(--pht)}
+html:not(.motion) .film--hero .film__still{top:.7rem;left:calc(100% - var(--phw) + .7rem);right:auto;max-width:calc(var(--phw) - 1.4rem)}
+html:not(.motion) .film--hero .cap{width:auto}
+html:not(.motion) .film--hero .cap--intro{grid-column:1;grid-row:1 / 5;align-self:stretch;padding:clamp(1.5rem,3vw,3rem) clamp(1.5rem,3vw,3rem) 2.5rem max(5vw,calc((100vw - 1180px)/2))}
+html:not(.motion) .film--hero .cap--intro h1{font-size:clamp(2.4rem,3.6vw,3.6rem)}
+html:not(.motion) .film--hero .cap--intro .btns .btn{flex:1 1 auto}
+html:not(.motion) .film--hero .cap--intro .facts-bar{grid-template-columns:repeat(2,1fr);row-gap:.6rem}
+html:not(.motion) .film--hero .cap:not(.cap--intro){grid-column:2;margin:1.2rem 1.5rem 0}
+}
 :root{--fv-disp:"opsz" 48,"SOFT" 50,"WONK" 0;--fv-sec:"opsz" 28,"SOFT" 50,"WONK" 0;--fv-num:"opsz" 72,"SOFT" 50,"WONK" 0}
 .brand,.disp,.disp--hero,.cap h1,.cap h2,.cap h1 em,.scene h3,.tl h3,.price h3,.story__ghost{font-family:var(--disp);font-weight:400;font-optical-sizing:none;font-variation-settings:var(--fv-disp);letter-spacing:-.015em}
 .scene h3,.tl h3,.price h3{font-variation-settings:var(--fv-sec)}
@@ -262,7 +281,7 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
   <a class="brand" href="#top" aria-label="The Hill, back to top"><svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="M4 30 Q20 8 36 30" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="20" cy="15" r="4.5" fill="#d8a85a"/><path d="M2 33h36" stroke="currentColor" stroke-width="2.2"/></svg><span>The Hill</span></a>
   <nav class="nav__links" aria-label="Main"><a href="#date">2027 dates</a><a href="#day">The day</a><a href="#story">Since 1801</a><a href="#included">Included</a><a href="#grounds">Grounds</a><a href="#visit">Visit</a></nav>
   <a class="btn btn--ghost btn--sm nav__tour" href="tel:+18457589002">CALL TO TOUR</a>
-  <a class="btn btn--primary btn--sm nav__cta is-quiet" href="#date" data-hold>CHECK A DATE</a>
+  <a class="btn btn--primary btn--sm nav__cta" href="#date">CHECK A DATE</a>
 </header>
 
 <main>
@@ -270,7 +289,7 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
      Dip through dark (scene cut under black). Shot 2: upstairs, the reception floor. Ends on the date section's ivory. -->
 <section class="film film--hero" id="film-arrival" data-film="hero" data-dips="24:.72,25:.38,26:.1,27:0,28:.1,29:.38,30:.72" data-frames="57" data-len="320" style="--len:320svh" data-tone="#141a16" data-out="#f6f1e7" aria-labelledby="hero-h">
   <div class="film__stage">
-    <picture class="film__poster"><source media="(orientation:portrait)" type="image/avif" srcset="film/hero/poster-m.avif?v=4"><source media="(orientation:portrait)" type="image/webp" srcset="film/hero/poster-m.webp?v=4"><source type="image/avif" srcset="film/hero/poster-d.avif?v=4"><img src="film/hero/poster-d.webp?v=4" alt="The front of the pale-blue Palladian Barn at The Hill under a clear blue sky." width="1920" height="1080" loading="lazy" fetchpriority="high" decoding="async"></picture>
+    <picture class="film__poster"><source media="(orientation:portrait) and (max-width:599px)" type="image/avif" srcset="film/hero/poster-m.avif?v=4"><source media="(orientation:portrait) and (max-width:599px)" type="image/webp" srcset="film/hero/poster-m.webp?v=4"><source type="image/avif" srcset="film/hero/poster-d.avif?v=4"><img src="film/hero/poster-d.webp?v=4" alt="The front of the pale-blue Palladian Barn at The Hill under a clear blue sky." width="1920" height="1080" loading="lazy" fetchpriority="high" decoding="async"></picture>
     <canvas class="film__cv" aria-hidden="true"></canvas>
     <div class="film__dip" aria-hidden="true"></div>
     <div class="film__scrim" aria-hidden="true"></div>
