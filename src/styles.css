@@ -104,7 +104,7 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .cap--right p{margin-left:auto}
 .motion .cap--intro::before{inset:-22% -18% -14% -22%;background:radial-gradient(closest-side,rgba(10,13,11,.82),rgba(10,13,11,.64) 60%,rgba(10,13,11,0))}
 .motion .cap--intro{max-width:none;right:max(5vw,calc((100vw - 1180px)/2));bottom:calc(5vh + var(--barh) + var(--safe) + var(--hoff,0px))}
-.motion .cap--intro .lede{max-width:34em}
+.motion .cap--intro .lede{max-width:34em;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,.75)}
 /* the hero card is visible from first paint (no script needed) and settles in with CSS */
 .motion .cap--intro{opacity:1;visibility:visible}
 @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
@@ -118,7 +118,7 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .film__hint::after{content:"";display:block;width:1px;height:28px;margin:.5rem auto 0;background:rgba(246,241,231,.6);animation:hint 2.2s var(--ease) infinite}
 @keyframes hint{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 /* disclosure on every film */
-.motion .film__label{display:block;position:absolute;z-index:8;top:calc(64px + .7rem);left:max(4vw,calc((100vw - 1180px)/2));max-width:min(30rem,calc(100vw - 8vw - 1.5rem));margin:0;padding:.3rem .7rem;border-radius:3px;background:rgba(10,13,11,.72);color:#fff;font-size:.8rem;line-height:1.45}
+.motion .film__label{display:block;position:absolute;z-index:8;top:calc(64px + .7rem);left:max(4vw,calc((100vw - 1180px)/2));max-width:min(30rem,calc(100vw - 8vw - 1.5rem));margin:0;padding:.3rem .7rem;border-radius:3px;background:rgba(10,13,11,.72);color:#fff;font-size:.85rem;line-height:1.45}
 
 /* ================= sections: real backgrounds; feathered edges where they meet a film ================= */
 .tone-dark{color:var(--ivory)}
