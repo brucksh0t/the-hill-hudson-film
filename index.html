@@ -7,13 +7,13 @@
 <meta name="description" content="Hudson Valley Weddings at The Hill: a historic 300-acre estate in Hudson, NY with the 1801 Palladian Barn. One wedding per weekend, May through October, 75 to 300 guests. 845-758-9002.">
 <meta name="theme-color" content="#141a16">
 <link rel="icon" type="image/png" href="img/favicon.png">
-<link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-v2-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/mulish-latin.woff2" crossorigin>
 <link rel="preload" as="image" type="image/avif" href="film/hero/poster-m.avif?v=4" media="(orientation:portrait)" fetchpriority="high">
 <link rel="preload" as="image" type="image/avif" href="film/hero/poster-d.avif?v=4" media="(orientation:landscape)" fetchpriority="high">
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion');</script>
-<style>@font-face{font-family:"Fraunces";font-style:normal;font-weight:400 700;font-display:swap;src:url(fonts/fraunces-latin.woff2) format("woff2")}
-@font-face{font-family:"Fraunces";font-style:italic;font-weight:400;font-display:swap;src:url(fonts/fraunces-italic-latin.woff2) format("woff2")}
+<style>@font-face{font-family:"Fraunces";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/fraunces-v2-latin.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-style:italic;font-weight:400;font-display:swap;src:url(fonts/fraunces-v2-italic-latin.woff2) format("woff2")}
 @font-face{font-family:"Mulish";font-style:normal;font-weight:400 700;font-display:swap;src:url(fonts/mulish-latin.woff2) format("woff2")}
 :root{--night:#141a16;--ink:#1d2620;--forest:#24342a;--rust:#9c3d22;--rust-d:#7d2f19;--gold:#d8a85a;--gold-d:#8a5f1c;--ivory:#f6f1e7;--paper:#fbf8f2;--muted:#56605a;--line:#ddd4c3;--focus:#c06a2e;--disp:"Fraunces",Georgia,serif;--body:"Mulish",system-ui,sans-serif;--safe:env(safe-area-inset-bottom,0px);--ease:cubic-bezier(.2,.7,.1,1);--barh:0px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -47,7 +47,7 @@ a[href^="tel"]:not(.btn),a[href^="mailto"]:not(.btn){display:inline-flex;align-i
 .note{font-size:.95rem;color:var(--muted);margin-top:1rem}.note--light{color:#cfd3cc}
 section{position:relative}
 main,.foot{overflow-x:clip}
-.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.18em;margin-bottom:-.18em}
 .split .wi{display:inline-block}
 .film{background:var(--night);color:#fff}
 .film__stage{position:relative}
@@ -91,7 +91,7 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .film--hero + .after-film{margin-top:-45svh}
 .motion .film__cv{display:block;position:absolute;inset:0;width:100%;height:100%}
 .motion .film__scrim{display:block;position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 38%,rgba(10,13,11,0) 45%,rgba(10,13,11,.5) 100%),linear-gradient(0deg,rgba(10,13,11,.72) 0%,rgba(10,13,11,.45) 30%,rgba(10,13,11,.12) 60%,rgba(10,13,11,0) 80%)}
-.motion .cap::before{content:"";position:absolute;inset:-40% -30% -30% -30%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(10,13,11,.74),rgba(10,13,11,.5) 55%,rgba(10,13,11,0))}
+.motion .cap::before{content:"";position:absolute;inset:-1.1rem -1.4rem;z-index:-1;pointer-events:none;background:rgba(10,13,11,.62);border-radius:2px}
 .motion .film__veil{display:block;position:absolute;inset:-2px;pointer-events:none;opacity:0;z-index:7}
 .motion .film--hero .film__veil--out{background:var(--ivory)}
 .motion .film--grounds .film__veil--out{background:var(--paper)}
@@ -101,7 +101,7 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .cap a,.motion .cap .btn{pointer-events:auto}
 .motion .cap--right{left:auto;right:max(5vw,calc((100vw - 1180px)/2));text-align:right}
 .motion .cap--right p{margin-left:auto}
-.motion .cap--intro::before{inset:-22% -18% -14% -22%;background:radial-gradient(closest-side,rgba(10,13,11,.82),rgba(10,13,11,.64) 60%,rgba(10,13,11,0))}
+.motion .cap--intro::before{background:rgba(10,13,11,.7)}
 .motion .cap--intro{max-width:none;right:max(5vw,calc((100vw - 1180px)/2));bottom:calc(5vh + var(--barh) + var(--safe) + var(--hoff,0px))}
 .motion .cap--intro .lede{max-width:34em;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,.75)}
 .motion .cap--intro{opacity:1;visibility:visible}
@@ -109,7 +109,7 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .cap--intro>*{animation:rise .9s var(--ease) backwards}
 .motion .cap--intro>:nth-child(2){animation-delay:.08s}.motion .cap--intro>:nth-child(3){animation-delay:.2s}.motion .cap--intro>:nth-child(4){animation-delay:.3s}.motion .cap--intro>:nth-child(5){animation-delay:.4s}
 .motion .cap--end{max-width:36rem;bottom:calc(8vh + var(--barh) + var(--safe))}
-.motion .cap--end::before{inset:-30% -24% -18% -24%;background:radial-gradient(closest-side,rgba(10,13,11,.82),rgba(10,13,11,.6) 60%,rgba(10,13,11,0))}
+.motion .cap--end::before{background:rgba(10,13,11,.7)}
 .motion .film__meter{display:block;position:absolute;z-index:4;right:2.2vw;top:50%;width:2px;height:22vh;transform:translateY(-50%);background:rgba(246,241,231,.18);border-radius:2px;overflow:hidden}
 .motion .film__meter span{display:block;width:100%;height:100%;background:var(--gold);transform-origin:top;transform:scaleY(0)}
 .motion .film__hint{display:block;position:absolute;z-index:4;left:50%;bottom:calc(1rem + var(--safe));transform:translateX(-50%);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,241,231,.85)}
@@ -233,7 +233,15 @@ address{font-style:normal;line-height:1.7}.muted{color:#b9bfb7}
 @media (max-height:740px) and (max-width:899px){.cap--intro .facts-bar{display:none}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 @media (max-width:380px){.motion .cap--intro .facts-bar{display:none}}
-html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82);padding:1rem 1.1rem;border-radius:3px}</style>
+html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82);padding:1rem 1.1rem;border-radius:3px}
+:root{--fv-disp:"opsz" 48,"SOFT" 50,"WONK" 0;--fv-sec:"opsz" 28,"SOFT" 50,"WONK" 0;--fv-num:"opsz" 72,"SOFT" 50,"WONK" 0}
+.brand,.disp,.disp--hero,.cap h1,.cap h2,.cap h1 em,.scene h3,.tl h3,.tl__y,.price h3,.story__ghost{font-family:var(--disp);font-weight:400;font-optical-sizing:none;font-variation-settings:var(--fv-disp);letter-spacing:-.015em}
+.scene h3,.tl h3,.price h3{font-variation-settings:var(--fv-sec)}
+.story__ghost{font-variation-settings:var(--fv-num)}
+.tl h3{font-size:1.75rem;line-height:1.15}
+.acc summary,.facts-bar b,.big,.guests output,.checker legend,.m--note{font-family:var(--body);font-weight:600;font-size:18px;line-height:1.4;letter-spacing:0;font-variation-settings:normal}
+.kicker,.cap .kicker,.cap--intro .kicker,.scene__n,.facts-bar span,.motion .film__hint{font-family:var(--body);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase}
+.btn,.btn--lg,.btn--sm,.nav__tour,.mbar .btn{font-family:var(--body);font-weight:700;font-size:.9375rem;letter-spacing:.12em;text-transform:uppercase}</style>
 </head>
 <body>
 <aside class="flag" aria-label="Concept notice"><p>Concept preview · not affiliated with The Hill</p></aside>
@@ -399,9 +407,9 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
     <h2 id="gr-h" class="disp split">The grounds</h2>
     <p class="lede lede--dark">Thoroughbreds in the pastures, a gazebo, wildflower fields, peonies, apple trees and dogwoods.</p>
     <div class="mosaic">
-      <figure class="m m--wide" data-from="left"><picture><source type="image/avif" srcset="img/horses-800.avif 800w, img/horses-1200.avif 1200w, img/horses-1500.avif 1500w" sizes="(min-width:900px) 60vw, 90vw"><source type="image/webp" srcset="img/horses-800.webp 800w, img/horses-1200.webp 1200w, img/horses-1500.webp 1500w" sizes="(min-width:900px) 60vw, 90vw"><img src="img/horses.jpg" alt="Horses leaning over a wooden pasture fence, with wooded hills behind." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--tall" data-from="right"><picture><source type="image/avif" srcset="img/wagon-bar-800.avif 800w, img/wagon-bar-1200.avif 1200w" sizes="(min-width:900px) 34vw, 90vw"><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 34vw, 90vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--small" data-from="bottom"><picture><source type="image/avif" srcset="img/field-ceremony-800.avif 800w" sizes="(min-width:900px) 420px, 90vw"><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-width:900px) 420px, 90vw"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--wide" data-from="left"><picture><source type="image/avif" srcset="img/horses-800.avif 800w, img/horses-1200.avif 1200w, img/horses-1500.avif 1500w" sizes="(min-width:900px) 66vw, 99vw"><source type="image/webp" srcset="img/horses-800.webp 800w, img/horses-1200.webp 1200w, img/horses-1500.webp 1500w" sizes="(min-width:900px) 66vw, 99vw"><img src="img/horses.jpg" alt="Horses leaning over a wooden pasture fence, with wooded hills behind." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--tall" data-from="right"><picture><source type="image/avif" srcset="img/wagon-bar-800.avif 800w, img/wagon-bar-1200.avif 1200w" sizes="(min-width:900px) 37vw, 99vw"><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 37vw, 99vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--small" data-from="bottom"><picture><source type="image/avif" srcset="img/field-ceremony-800.avif 800w" sizes="(min-width:900px) 462px, 99vw"><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-width:900px) 462px, 99vw"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
       <div class="m m--note"><p>Just a 2-hour train ride from New York City. Minutes from Hudson’s hotels and B&amp;Bs.</p></div>
     </div>
     <p class="note">Photos from hudsonvalleyweddings.net.</p>
