@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#141a16">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-v2-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-v2-italic-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/mulish-latin.woff2" crossorigin>
 <link rel="preload" as="image" type="image/avif" href="film/hero/poster-m.avif?v=4" media="(orientation:portrait)" fetchpriority="high">
 <link rel="preload" as="image" type="image/avif" href="film/hero/poster-d.avif?v=4" media="(orientation:landscape)" fetchpriority="high">
@@ -15,7 +16,7 @@
 <style>@font-face{font-family:"Fraunces";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/fraunces-v2-latin.woff2) format("woff2")}
 @font-face{font-family:"Fraunces";font-style:italic;font-weight:400;font-display:swap;src:url(fonts/fraunces-v2-italic-latin.woff2) format("woff2")}
 @font-face{font-family:"Mulish";font-style:normal;font-weight:400 700;font-display:swap;src:url(fonts/mulish-latin.woff2) format("woff2")}
-:root{--night:#141a16;--ink:#1d2620;--forest:#24342a;--rust:#9c3d22;--rust-d:#7d2f19;--gold:#d8a85a;--gold-d:#8a5f1c;--ivory:#f6f1e7;--paper:#fbf8f2;--muted:#56605a;--line:#ddd4c3;--focus:#c06a2e;--disp:"Fraunces",Georgia,serif;--body:"Mulish",system-ui,sans-serif;--safe:env(safe-area-inset-bottom,0px);--ease:cubic-bezier(.2,.7,.1,1);--barh:0px}
+:root{--dpr:1;--night:#141a16;--ink:#1d2620;--forest:#24342a;--rust:#9c3d22;--rust-d:#7d2f19;--gold:#d8a85a;--gold-d:#8a5f1c;--ivory:#f6f1e7;--paper:#fbf8f2;--muted:#56605a;--line:#ddd4c3;--focus:#c06a2e;--disp:"Fraunces",Georgia,serif;--body:"Mulish",system-ui,sans-serif;--safe:env(safe-area-inset-bottom,0px);--ease:cubic-bezier(.2,.7,.1,1);--barh:0px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-padding-top:72px}
 body{font-family:var(--body);background:var(--night);color:var(--ink);font-size:18px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -38,7 +39,7 @@ a[href^="tel"]:not(.btn),a[href^="mailto"]:not(.btn){display:inline-flex;align-i
 .btn--primary{background:var(--rust);color:#fff;border-color:var(--rust)}.btn--primary:hover{background:var(--rust-d);border-color:var(--rust-d)}
 .btn--ghost{border-color:var(--ivory);color:var(--ivory);background:transparent}.btn--ghost:hover{background:var(--ivory);color:var(--ink)}
 .btn--outline{border-color:var(--ink);color:var(--ink);background:transparent}.btn--outline:hover{background:var(--ink);color:#fff}
-.btn[data-hold]{transition:none}.btn--primary.is-quiet{background:transparent;border-color:var(--ivory);color:var(--ivory)}
+.btn[data-hold]{transition:none}.btn[data-hold].is-off{visibility:hidden}.btn--primary.is-quiet{background:transparent;border-color:var(--ivory);color:var(--ivory)}
 .kicker{font-weight:700;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase}
 .kicker--gold{color:var(--gold-d)}.kicker--rust{color:var(--rust)}
 .tone-dark .kicker--gold{color:var(--gold)}
@@ -63,7 +64,7 @@ html:not(.motion) .film--hero .film__still{display:block;position:absolute;z-ind
 .cap h2{font-size:clamp(2rem,5vw,4rem)}
 .cap .disp--hero{font-size:clamp(2.6rem,7vw,5.6rem)}
 .cap p:not(.kicker){max-width:34em;color:#f1ece2;font-size:clamp(1.02rem,1.5vw,1.2rem)}
-.lede{font-size:clamp(1.05rem,1.6vw,1.3rem);max-width:36em}
+.lede{font-size:clamp(1.05rem,1.6vw,1.3rem);font-weight:500;max-width:36em}
 .lede--dark{color:var(--muted)}
 .facts-bar{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);margin:2rem 0 0;border-top:1px solid rgba(255,255,255,.35);max-width:820px}
 .facts-bar li{padding:1rem .4rem 0;display:flex;flex-direction:column}
@@ -71,7 +72,11 @@ html:not(.motion) .film--hero .film__still{display:block;position:absolute;z-ind
 .facts-bar span{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:#eee6d6}
 html:not(.motion) .film--hero .film__stage{min-height:calc(100svh - 96px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
 html:not(.motion) .film--hero .film__poster{position:absolute;inset:0}
-html:not(.motion) .film--hero .film__poster img{width:100%;height:100%;max-height:none;object-fit:cover}
+html:not(.motion) .film:not(.film--hero) .film__poster{display:flex;justify-content:center;background:var(--night)}
+html:not(.motion) .film:not(.film--hero) .film__poster img{width:auto;height:auto;max-width:min(100%,calc(1600px / var(--dpr)));max-height:min(78svh,calc(1067px / var(--dpr)))}
+html:not(.motion) .film--hero .film__poster{display:flex;justify-content:center;align-items:flex-start;background:var(--night)}
+html:not(.motion) .film--hero .film__poster img{--pw:1920px;--ph:1080px;width:auto;height:auto;max-width:min(100%,calc(var(--pw) / var(--dpr)));max-height:min(100svh,calc(var(--ph) / var(--dpr)));object-fit:cover;object-position:50% 30%}
+@media (orientation:portrait){html:not(.motion) .film--hero .film__poster img{--pw:1080px;--ph:1440px}}
 html:not(.motion) .film--hero .film__stage::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,13,11,.92) 0%,rgba(10,13,11,.84) 50%,rgba(10,13,11,.66) 80%,rgba(10,13,11,.5) 100%)}
 html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5rem 0 calc(2.5rem + var(--barh))}
 .motion .film{height:calc(100svh + var(--len,300svh));overflow:clip;background:var(--night);z-index:1}
@@ -102,8 +107,8 @@ html:not(.motion) .film--hero .film__caps{position:relative;z-index:1;padding:5r
 .motion .cap--right{left:auto;right:max(5vw,calc((100vw - 1180px)/2));text-align:right}
 .motion .cap--right p{margin-left:auto}
 .motion .cap--intro::before{background:rgba(10,13,11,.7)}
-.motion .cap--intro{max-width:none;right:max(5vw,calc((100vw - 1180px)/2));bottom:calc(5vh + var(--barh) + var(--safe) + var(--hoff,0px))}
-.motion .cap--intro .lede{max-width:34em;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,.75)}
+.motion .cap--intro{max-width:none;width:fit-content;right:auto;bottom:calc(5vh + var(--barh) + var(--safe) + var(--hoff,0px))}
+.motion .cap--intro .lede{max-width:34em;text-shadow:0 1px 3px rgba(0,0,0,.75)}
 .motion .cap--intro{opacity:1;visibility:visible}
 @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 .motion .cap--intro>*{animation:rise .9s var(--ease) backwards}
@@ -158,7 +163,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .scene--flip .scene__img{order:2}
 .scene__img{overflow:hidden;border-radius:3px;box-shadow:0 50px 90px -60px rgba(0,0,0,.9)}
 .scene__img img{width:100%;aspect-ratio:3/2;object-fit:cover}
-.scene--small .scene__img{max-width:480px;justify-self:center;width:100%}
+.scene--small .scene__img{max-width:calc(800px / var(--dpr));justify-self:center;width:100%}
 .scene--small .scene__img img{aspect-ratio:4/3}
 .scene__n{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:700}
 .scene h3{font-family:var(--disp);font-weight:400;font-size:clamp(1.8rem,3.6vw,2.9rem);line-height:1.08;letter-spacing:-.01em;margin:.35rem 0 .7rem;text-wrap:balance}
@@ -170,11 +175,12 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .tl{list-style:none;position:relative;margin-top:2.5rem;display:grid;gap:2.4rem;padding-left:2rem}
 .tl::before{content:"";position:absolute;left:0;top:.4rem;bottom:.4rem;width:2px;background:var(--line)}
 .tl__line{position:absolute;left:0;top:.4rem;width:2px;height:calc(100% - .8rem);background:var(--rust);transform-origin:top}
-.tl li{position:relative;display:grid;grid-template-columns:11rem minmax(0,1fr);gap:1.5rem}
+.tl li{position:relative;display:grid;grid-template-columns:11rem minmax(0,1fr);gap:1.5rem;align-items:baseline}
 .tl li::before{content:"";position:absolute;left:calc(-2rem - 6px);top:.55rem;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--rust)}
 .tl__y{font-family:var(--body);font-weight:700;font-size:20px;line-height:1.1;font-variant-numeric:tabular-nums;font-variation-settings:normal;letter-spacing:normal;color:var(--rust)}
 .tl h3{font-family:var(--disp);font-weight:500;font-size:1.35rem;line-height:1.25}
 .tl p{color:var(--muted);max-width:34em}
+.tl h3+p{margin-top:.5rem}
 .included{padding:7rem 0}
 .inc{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:4rem}
 .ticks{list-style:none;display:grid;gap:.8rem}.ticks li{padding-left:1.8rem;position:relative}.ticks li::before{content:"";position:absolute;left:0;top:.6rem;width:10px;height:10px;border-radius:50%;background:var(--gold)}
@@ -183,7 +189,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .grounds{padding:7rem 0}
 .mosaic{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:1rem;margin-top:2.5rem;align-items:start}
 .m{overflow:hidden;border-radius:3px}.m img{width:100%}
-.m--wide{grid-column:1/8}.m--tall{grid-column:8/13;grid-row:span 2}.m--small{grid-column:2/7;max-width:420px}
+.m--wide{grid-column:1/8}.m--tall{grid-column:8/13;grid-row:span 2}.m--small{grid-column:2/7;max-width:min(420px,calc(800px / var(--dpr)))}
 .m--note{grid-column:1/8;font-family:var(--disp);font-size:1.4rem;line-height:1.35;padding:1rem 0}
 .faq{padding:6.5rem 0 7rem}
 .acc{display:grid;gap:.5rem;max-width:820px}
@@ -210,7 +216,7 @@ address{font-style:normal;line-height:1.7}.muted{color:#b9bfb7}
 .dates{grid-template-columns:minmax(0,1fr)}
 .scene{grid-template-columns:minmax(0,1fr);gap:1.2rem}.scene--flip .scene__img{order:0}
 .tl li{grid-template-columns:minmax(0,1fr);gap:.2rem}
-.mosaic{grid-template-columns:minmax(0,1fr)}.m--wide,.m--tall,.m--small,.m--note{grid-column:auto;grid-row:auto}.m--small{max-width:340px}
+.mosaic{grid-template-columns:minmax(0,1fr)}.m--wide,.m--tall,.m--small,.m--note{grid-column:auto;grid-row:auto}.m--small{max-width:min(340px,calc(800px / var(--dpr)))}.m--tall{max-width:600px}
 .mbar{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;position:fixed;left:0;right:0;bottom:0;z-index:50;padding:.5rem .6rem calc(.5rem + var(--safe));background:rgba(20,26,22,.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .mbar .btn{min-height:50px;font-size:.9rem;letter-spacing:.1em;padding:.2em .4em}
 .btn--lg{font-size:1rem;min-height:56px}
@@ -227,7 +233,7 @@ address{font-style:normal;line-height:1.7}.muted{color:#b9bfb7}
 .motion .day__arc{width:84px;height:46px;top:84px}
 .motion .film__label{font-size:.8rem}
 }
-@media (max-width:420px){.row2{grid-template-columns:1fr}.nav__tour{font-size:.8rem;padding:.2em .8em}.brand{font-size:1.25rem}
+@media (max-width:420px){.motion .film__label{top:calc(64px + .4rem)}.row2{grid-template-columns:1fr}.nav__tour{font-size:.8rem;padding:.2em .8em}.brand{font-size:1.25rem}
 .cap--intro .lede{font-size:1rem}.cap--intro h1{font-size:2.45rem}.facts-bar b{font-size:1.3rem}.facts-bar li{padding-top:.5rem}.facts-bar span{font-size:.75rem;letter-spacing:.12em}
 .cap--intro .kicker{font-size:.75rem;letter-spacing:.14em}}
 @media (max-height:740px) and (max-width:899px){.cap--intro .facts-bar{display:none}}
@@ -241,7 +247,12 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
 .tl h3{font-size:1.75rem;line-height:1.15}
 .acc summary,.facts-bar b,.big,.guests output,.checker legend,.m--note{font-family:var(--body);font-weight:600;font-size:18px;line-height:1.4;letter-spacing:0;font-variation-settings:normal}
 .kicker,.cap .kicker,.cap--intro .kicker,.scene__n,.facts-bar span,.motion .film__hint{font-family:var(--body);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase}
-.btn,.btn--lg,.btn--sm,.nav__tour,.mbar .btn{font-family:var(--body);font-weight:700;font-size:.9375rem;letter-spacing:.12em;text-transform:uppercase}</style>
+.btn,.btn--lg,.btn--sm,.nav__tour,.mbar .btn{font-family:var(--body);font-weight:700;font-size:.9375rem;letter-spacing:.12em;text-transform:uppercase}
+.motion .m--small{max-width:min(420px,calc(800px / var(--dpr) / 1.08))}
+@media (max-width:899px){.motion .m--small{max-width:min(340px,calc(800px / var(--dpr) / 1.08))}.motion .m--tall{max-width:calc(600px / 1.08)}}
+@media (min-resolution:1.01dppx){:root{--dpr:2}}
+@media (min-resolution:2.01dppx){:root{--dpr:3}}
+@media (min-resolution:3.01dppx){:root{--dpr:4}}</style>
 </head>
 <body>
 <aside class="flag" aria-label="Concept notice"><p>Concept preview · not affiliated with The Hill</p></aside>
@@ -337,7 +348,7 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
         <div class="scene__copy"><p class="scene__n">04 · Dinner</p><h3>Upstairs in the Palladian Barn</h3><p>The barn holds 75 to 300 guests for the ceremony and reception.</p></div>
       </article>
       <article class="scene scene--small" data-from="right">
-        <figure class="scene__img"><picture><source type="image/avif" srcset="img/barn-lanterns-800.avif 800w" sizes="(min-width:900px) 480px, 90vw"><source type="image/webp" srcset="img/barn-lanterns-800.webp 800w" sizes="(min-width:900px) 480px, 90vw"><img src="img/barn-lanterns.jpg" alt="White paper lanterns hung from the beams of the barn above a set reception floor." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
+        <figure class="scene__img"><picture><source type="image/avif" srcset="img/barn-lanterns-800.avif 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><source type="image/webp" srcset="img/barn-lanterns-800.webp 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><img src="img/barn-lanterns.jpg" alt="White paper lanterns hung from the beams of the barn above a set reception floor." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
         <div class="scene__copy"><p class="scene__n">05 · Dancing, then the fire</p><h3>Amplified until 10:30, unplugged until 11</h3><p>Amplified music runs until 10:30 pm and un-amplified until 11:00 pm. Wind down by the fire pit; The Hill says to ask about setting one up.</p></div>
       </article>
     </div>
@@ -408,8 +419,8 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
     <p class="lede lede--dark">Thoroughbreds in the pastures, a gazebo, wildflower fields, peonies, apple trees and dogwoods.</p>
     <div class="mosaic">
       <figure class="m m--wide" data-from="left"><picture><source type="image/avif" srcset="img/horses-800.avif 800w, img/horses-1200.avif 1200w, img/horses-1500.avif 1500w" sizes="(min-width:900px) 66vw, 99vw"><source type="image/webp" srcset="img/horses-800.webp 800w, img/horses-1200.webp 1200w, img/horses-1500.webp 1500w" sizes="(min-width:900px) 66vw, 99vw"><img src="img/horses.jpg" alt="Horses leaning over a wooden pasture fence, with wooded hills behind." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--tall" data-from="right"><picture><source type="image/avif" srcset="img/wagon-bar-800.avif 800w, img/wagon-bar-1200.avif 1200w" sizes="(min-width:900px) 37vw, 99vw"><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 37vw, 99vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--small" data-from="bottom"><picture><source type="image/avif" srcset="img/field-ceremony-800.avif 800w" sizes="(min-width:900px) 462px, 99vw"><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-width:900px) 462px, 99vw"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--tall" data-from="right"><picture><source type="image/avif" srcset="img/wagon-bar-800.avif 800w, img/wagon-bar-1200.avif 1200w" sizes="(min-width:900px) 37vw, 79vw"><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 37vw, 79vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--small" data-from="bottom"><picture><source type="image/avif" srcset="img/field-ceremony-800.avif 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
       <div class="m m--note"><p>Just a 2-hour train ride from New York City. Minutes from Hudson’s hotels and B&amp;Bs.</p></div>
     </div>
     <p class="note">Photos from hudsonvalleyweddings.net.</p>
@@ -477,6 +488,16 @@ html:not(.motion) .film--hero .cap:not(.cap--intro){background:rgba(10,13,11,.82
     s.onerror=function(){document.documentElement.classList.remove('motion');if(src.indexOf('main')<0){i=L.length-1;next();}};document.body.appendChild(s);})();}
  function later(){requestAnimationFrame(function(){setTimeout(boot,0);});}
  if(document.readyState==='complete')later();else addEventListener('load',later);})();
+</script>
+<script>
+/* hide the sticky CHECK A DATE buttons while an inline CHECK A 2027 DATE button is actually on screen (IntersectionObserver + caption visibility) */
+(function(){if(!('IntersectionObserver' in window))return;var holds=[].slice.call(document.querySelectorAll('[data-hold]')),seen=new Set(),t=0;
+ function vis(b){var c=b.closest('.cap');if(!c)return true;var cs=getComputedStyle(c);return parseFloat(cs.opacity)>.05&&cs.visibility!=='hidden';}
+ function upd(){t=0;var off=false;seen.forEach(function(b){if(vis(b))off=true;});holds.forEach(function(h){h.classList.toggle('is-off',off);});}
+ function req(){if(!t)t=requestAnimationFrame(upd);}
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?seen.add(e.target):seen.delete(e.target);});req();});
+ [].forEach.call(document.querySelectorAll('.btns a.btn--lg[href="#date"]'),function(b){io.observe(b);});
+ addEventListener('scroll',function(){if(seen.size)req();},{passive:true});setInterval(function(){if(seen.size)req();},250);})();
 </script>
 </body>
 </html>

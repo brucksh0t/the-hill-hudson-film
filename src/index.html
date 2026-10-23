@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#141a16">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-v2-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-v2-italic-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/mulish-latin.woff2" crossorigin>
 <link rel="preload" as="image" type="image/avif" href="film/hero/poster-m.avif?v=4" media="(orientation:portrait)" fetchpriority="high">
 <link rel="preload" as="image" type="image/avif" href="film/hero/poster-d.avif?v=4" media="(orientation:landscape)" fetchpriority="high">
@@ -108,7 +109,7 @@
         <div class="scene__copy"><p class="scene__n">04 · Dinner</p><h3>Upstairs in the Palladian Barn</h3><p>The barn holds 75 to 300 guests for the ceremony and reception.</p></div>
       </article>
       <article class="scene scene--small" data-from="right">
-        <figure class="scene__img"><picture><source type="image/avif" srcset="img/barn-lanterns-800.avif 800w" sizes="(min-width:900px) 480px, 90vw"><source type="image/webp" srcset="img/barn-lanterns-800.webp 800w" sizes="(min-width:900px) 480px, 90vw"><img src="img/barn-lanterns.jpg" alt="White paper lanterns hung from the beams of the barn above a set reception floor." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
+        <figure class="scene__img"><picture><source type="image/avif" srcset="img/barn-lanterns-800.avif 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><source type="image/webp" srcset="img/barn-lanterns-800.webp 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><img src="img/barn-lanterns.jpg" alt="White paper lanterns hung from the beams of the barn above a set reception floor." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
         <div class="scene__copy"><p class="scene__n">05 · Dancing, then the fire</p><h3>Amplified until 10:30, unplugged until 11</h3><p>Amplified music runs until 10:30 pm and un-amplified until 11:00 pm. Wind down by the fire pit; The Hill says to ask about setting one up.</p></div>
       </article>
     </div>
@@ -179,8 +180,8 @@
     <p class="lede lede--dark">Thoroughbreds in the pastures, a gazebo, wildflower fields, peonies, apple trees and dogwoods.</p>
     <div class="mosaic">
       <figure class="m m--wide" data-from="left"><picture><source type="image/avif" srcset="img/horses-800.avif 800w, img/horses-1200.avif 1200w, img/horses-1500.avif 1500w" sizes="(min-width:900px) 66vw, 99vw"><source type="image/webp" srcset="img/horses-800.webp 800w, img/horses-1200.webp 1200w, img/horses-1500.webp 1500w" sizes="(min-width:900px) 66vw, 99vw"><img src="img/horses.jpg" alt="Horses leaning over a wooden pasture fence, with wooded hills behind." width="1500" height="1001" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--tall" data-from="right"><picture><source type="image/avif" srcset="img/wagon-bar-800.avif 800w, img/wagon-bar-1200.avif 1200w" sizes="(min-width:900px) 37vw, 99vw"><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 37vw, 99vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
-      <figure class="m m--small" data-from="bottom"><picture><source type="image/avif" srcset="img/field-ceremony-800.avif 800w" sizes="(min-width:900px) 462px, 99vw"><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-width:900px) 462px, 99vw"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--tall" data-from="right"><picture><source type="image/avif" srcset="img/wagon-bar-800.avif 800w, img/wagon-bar-1200.avif 1200w" sizes="(min-width:900px) 37vw, 79vw"><source type="image/webp" srcset="img/wagon-bar-800.webp 800w, img/wagon-bar-1200.webp 1200w" sizes="(min-width:900px) 37vw, 79vw"><img src="img/wagon-bar.jpg" alt="An old wooden farm wagon set up as a bar on the grass." width="1200" height="1600" loading="lazy" decoding="async"></picture></figure>
+      <figure class="m m--small" data-from="bottom"><picture><source type="image/avif" srcset="img/field-ceremony-800.avif 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><source type="image/webp" srcset="img/field-ceremony-800.webp 800w" sizes="(min-resolution:2.01dppx) 266px, (min-resolution:1.01dppx) 400px, 800px"><img src="img/field-ceremony.jpg" alt="White chairs and a greenery-wrapped arch set for a ceremony in a field edged by trees." width="800" height="600" loading="lazy" decoding="async"></picture></figure>
       <div class="m m--note"><p>Just a 2-hour train ride from New York City. Minutes from Hudson’s hotels and B&amp;Bs.</p></div>
     </div>
     <p class="note">Photos from hudsonvalleyweddings.net.</p>
@@ -248,6 +249,16 @@
     s.onerror=function(){document.documentElement.classList.remove('motion');if(src.indexOf('main')<0){i=L.length-1;next();}};document.body.appendChild(s);})();}
  function later(){requestAnimationFrame(function(){setTimeout(boot,0);});}
  if(document.readyState==='complete')later();else addEventListener('load',later);})();
+</script>
+<script>
+/* hide the sticky CHECK A DATE buttons while an inline CHECK A 2027 DATE button is actually on screen (IntersectionObserver + caption visibility) */
+(function(){if(!('IntersectionObserver' in window))return;var holds=[].slice.call(document.querySelectorAll('[data-hold]')),seen=new Set(),t=0;
+ function vis(b){var c=b.closest('.cap');if(!c)return true;var cs=getComputedStyle(c);return parseFloat(cs.opacity)>.05&&cs.visibility!=='hidden';}
+ function upd(){t=0;var off=false;seen.forEach(function(b){if(vis(b))off=true;});holds.forEach(function(h){h.classList.toggle('is-off',off);});}
+ function req(){if(!t)t=requestAnimationFrame(upd);}
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?seen.add(e.target):seen.delete(e.target);});req();});
+ [].forEach.call(document.querySelectorAll('.btns a.btn--lg[href="#date"]'),function(b){io.observe(b);});
+ addEventListener('scroll',function(){if(seen.size)req();},{passive:true});setInterval(function(){if(seen.size)req();},250);})();
 </script>
 </body>
 </html>
